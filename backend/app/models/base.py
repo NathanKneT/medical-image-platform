@@ -2,9 +2,10 @@ import uuid
 from datetime import datetime, timezone
 from sqlalchemy import Column, String, DateTime, text
 from sqlalchemy.orm import declared_attr
+from sqlalchemy.ext.declarative import declarative_base
 
-from app.database import Base
-
+# Base class for all SQLAlchemy models
+Base = declarative_base()
 
 class BaseModel(Base):
     """
@@ -15,15 +16,13 @@ class BaseModel(Base):
     """
     __abstract__ = True
     
-    @declared_attr.directive
+    @declared_attr
     def __tablename__(cls):
         """
         Automatically generate table names from class names.
-        Example: UserAccount -> user_account
+        Example: AIModel -> aimodel, AnalysisResult -> analysisresult
         """
-        import re
-        name = re.sub('([a-z0-9])([A-Z])', r'\1_\2', cls.__name__)
-        return name.lower()
+        return cls.__name__.lower()
     
     # UUID primary key for better distribution and security
     id = Column(
