@@ -1,0 +1,44 @@
+{
+  // --- General Settings ---
+  "editor.formatOnSave": true, // Automatically format files when you save them
+  "files.exclude": {
+    "**/.git": true,
+    "**/.svn": true,
+    "**/.hg": true,
+    "**/CVS": true,
+    "**/.DS_Store": true,
+    "**/Thumbs.db": true,
+    "**/__pycache__": true, // Hide Python bytecode folders
+    "**/.next": true, // Hide Next.js build output
+    "**/node_modules": true // Hide node_modules
+  },
+
+  // --- Python Backend Settings ---
+  "[python]": {
+    "editor.defaultFormatter": "ms-python.black-formatter", // Use Black for formatting
+    "editor.tabSize": 4,
+    "editor.insertSpaces": true
+  },
+  "python.analysis.typeCheckingMode": "basic", // Enable basic type checking with Pylance
+  "python.testing.pytestEnabled": true,
+  
+  // --- TypeScript/Next.js Frontend Settings ---
+  "[typescript]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  },
+  "[typescriptreact]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  },
+  "[javascript]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  },
+  "[json]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  },
+  "eslint.validate": [
+    "javascript",
+    "javascriptreact",
+    "typescript",
+    "typescriptreact"
+  ]
+}
