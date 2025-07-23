@@ -43,7 +43,8 @@ class AnalysisResponse(BaseModel):
     status: AnalysisStatus
     progress_percentage: float = Field(..., ge=0, le=100)
     confidence_score: Optional[float] = Field(None, ge=0, le=1)
-    results: Optional[Dict[str, Any]] = None
+    # populate from 'results_payload'
+    results: Optional[Dict[str, Any]] = Field(None, validation_alias="results_payload")
     error_message: Optional[str] = None
     error_code: Optional[str] = None
     processing_time_seconds: Optional[float] = None
@@ -55,7 +56,7 @@ class AnalysisResponse(BaseModel):
     model_version: Optional[str] = Field(None, validation_alias="ai_model.version")
 
     class Config:
-        from_attributes = True
+        from_attributes = True # Replaces orm_mode=True in Pydantic v2
 
     @validator("confidence_score")
     def validate_confidence_score(cls, v):

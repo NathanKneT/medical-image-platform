@@ -2,6 +2,7 @@ from typing import List, Optional
 from fastapi import APIRouter, Depends, HTTPException, BackgroundTasks
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select
+from sqlalchemy.orm import selectinload
 
 from app.database import get_db
 from app.models.analysis import AnalysisResult, AnalysisStatus
@@ -87,11 +88,22 @@ async def get_analysis_result(
     Returns:
         AnalysisResponse with current status and results
     """
-    analysis = await db.get(AnalysisResult, analysis_id)
+    query = (
+        select(AnalysisResult)
+        .where(AnalysisResult.id == analysis_id)
+        .options(
+            selectinload(AnalysisResult.image), 
+            selectinload(AnalysisResult.ai_model)
+        )
+    )
+    result = await db.execute(query)
+    analysis = result.scalar_one_or_none()
+
     if not analysis:
         raise HTTPException(status_code=404, detail="Analysis not found")
-    
+
     return AnalysisResponse.model_validate(analysis)
+
 
 @router.get("/", response_model=List[AnalysisResponse])
 async def list_analyses(
@@ -114,7 +126,17 @@ async def list_analyses(
     Returns:
         List of AnalysisResponse objects
     """
-    query = select(AnalysisResult).offset(skip).limit(limit).order_by(AnalysisResult.created_at.desc())
+    query = (
+        select(AnalysisResult)
+        .offset(skip)
+        .limit(limit)
+        .order_by(AnalysisResult.created_at.desc())
+        .options(
+            selectinload(AnalysisResult.image), 
+            selectinload(AnalysisResult.ai_model)
+        )
+    )
+
     if status:
         query = query.where(AnalysisResult.status == status)
     if user_id:
