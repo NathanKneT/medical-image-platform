@@ -2,6 +2,7 @@ from datetime import datetime, timezone
 import os
 import uuid
 import aiofiles
+import aiofiles.os 
 from typing import List, Optional
 from fastapi import APIRouter, Depends, HTTPException, UploadFile, File, BackgroundTasks
 from fastapi.responses import FileResponse
@@ -246,9 +247,12 @@ async def delete_image(
             detail="Cannot delete image with existing analysis results"
         )
     
-    # Remove file from disk
-    if os.path.exists(image.filepath):
-        os.remove(image.filepath)
+    # Remove file from disk asynchronously
+    try:
+        if os.path.exists(image.filepath):
+            await aiofiles.os.remove(image.filepath) 
+    except OSError as e:
+        print(f"Error removing file {image.filepath}: {e}")
     
     # Remove database record
     await db.delete(image)

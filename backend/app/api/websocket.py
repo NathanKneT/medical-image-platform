@@ -2,6 +2,7 @@ import json
 from typing import Optional
 from fastapi import APIRouter, WebSocket, WebSocketDisconnect, Query
 from fastapi.websockets import WebSocketState
+from datetime import datetime, timezone
 
 from app.services.websocket_manager import manager
 
@@ -121,7 +122,7 @@ async def handle_websocket_message(websocket: WebSocket, client_id: str, message
         await manager.send_personal_message({
             "type": "pong",
             "timestamp": message.get("timestamp"),
-            "server_time": "2025-01-01T00:00:00Z"
+            "server_time": datetime.now(timezone.utc).isoformat()
         }, client_id)
     
     elif message_type == "status":

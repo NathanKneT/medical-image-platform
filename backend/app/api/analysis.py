@@ -1,7 +1,7 @@
 from typing import List, Optional
 from fastapi import APIRouter, Depends, HTTPException, BackgroundTasks
 from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy import select
+from sqlalchemy import select, update
 from sqlalchemy.orm import selectinload
 
 from app.database import get_db
@@ -51,7 +51,6 @@ async def start_analysis(
         
         background_tasks.add_task(
             AnalysisService.mock_ai_analysis,
-            db=db,
             analysis_id=str(analysis.id),
             websocket_manager=manager
         )
@@ -197,37 +196,38 @@ async def cancel_analysis(
     Cancel running analysis.
     
     This endpoint demonstrates how to handle cancellation of
-    long-running background tasks.
-    
-    Args:
-        analysis_id: Unique analysis identifier
-        db: Database session
-        
-    Returns:
-        Success message
+    long-running background tasks efficiently and without memory overhead.
     """
-    analysis = await db.get(AnalysisResult, analysis_id)
-    if not analysis:
+
+    get_stmt = select(AnalysisResult.status).where(AnalysisResult.id == analysis_id)
+    current_status = await db.scalar(get_stmt)
+
+    if not current_status:
         raise HTTPException(status_code=404, detail="Analysis not found")
     
-    if analysis.is_completed():
+    if current_status in [AnalysisStatus.COMPLETE, AnalysisStatus.FAILED, AnalysisStatus.CANCELLED]:
         raise HTTPException(
             status_code=400,
-            detail="Cannot cancel completed analysis"
+            detail=f"Cannot cancel analysis with status '{current_status}'"
         )
     
-    # Update status to cancelled
-    analysis.status = AnalysisStatus.CANCELLED
-    analysis.error_message = "Analysis cancelled by user"
-    analysis.error_code = "USER_CANCELLED"
-    
+    update_stmt = (
+        update(AnalysisResult)
+        .where(AnalysisResult.id == analysis_id)
+        .values(
+            status=AnalysisStatus.CANCELLED,
+            error_message="Analysis cancelled by user",
+            error_code="USER_CANCELLED"
+        )
+    )
+    await db.execute(update_stmt)
     await db.commit()
     
     # Notify via WebSocket
     await manager.send_analysis_update(analysis_id, {
-        "status": analysis.status,
+        "status": AnalysisStatus.CANCELLED.value,
         "message": "Analysis cancelled",
-        "error_code": analysis.error_code
+        "error_code": "USER_CANCELLED"
     })
     
     return {"message": "Analysis cancelled successfully"}

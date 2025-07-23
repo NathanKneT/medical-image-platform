@@ -15,25 +15,20 @@ export default function HomePage() {
   const router = useRouter();
   const [uploadedImage, setUploadedImage] = useState<ImageUploadResponse | null>(null);
   const [selectedModelId, setSelectedModelId] = useState<string | null>(null);
-  const [currentAnalysisId, setCurrentAnalysisId] = useState<string | null>(null);
   
   const { analysis, startAnalysis, progress, isLoading, error, clearError } = useImageAnalysis();
 
-  // Auto-navigate to analysis detail page when analysis starts
+  
   useEffect(() => {
-    if (analysis?.id && !currentAnalysisId) {
-      setCurrentAnalysisId(analysis.id);
-      // Navigate to analysis page after a short delay to ensure state is set
-      setTimeout(() => {
-        router.push(`/analysis/${analysis.id}`);
-      }, 1000);
+    // It triggers ONLY when analysis.id changes to a new value.
+    if (analysis?.id) {
+      router.push(`/analysis/${analysis.id}`);
     }
-  }, [analysis?.id, currentAnalysisId, router]);
+  }, [analysis?.id, router]);
 
   const handleUploadSuccess = (image: ImageUploadResponse) => {
     setUploadedImage(image);
     setSelectedModelId(null);
-    setCurrentAnalysisId(null);
     if (analysis) {
       clearError();
     }
@@ -135,7 +130,6 @@ export default function HomePage() {
                     <Button 
                       variant="outline"
                       onClick={() => {
-                        setCurrentAnalysisId(null);
                         setUploadedImage(null);
                         setSelectedModelId(null);
                       }}

@@ -206,14 +206,7 @@ export interface paths {
          * @description Cancel running analysis.
          *
          *     This endpoint demonstrates how to handle cancellation of
-         *     long-running background tasks.
-         *
-         *     Args:
-         *         analysis_id: Unique analysis identifier
-         *         db: Database session
-         *
-         *     Returns:
-         *         Success message
+         *     long-running background tasks efficiently and without memory overhead.
          */
         delete: operations["cancel_analysis_api_v1_analysis__analysis_id__delete"];
         options?: never;

@@ -2,6 +2,7 @@ import json
 import asyncio
 from typing import Dict, List
 from fastapi import WebSocket
+from datetime import datetime, timezone
 import logging
 
 logger = logging.getLogger(__name__)
@@ -136,7 +137,7 @@ class ConnectionManager:
         message = {
             "type": "analysis_update",
             "analysis_id": analysis_id,
-            "timestamp": "2025-01-01T00:00:00Z",  # In production, use actual timestamp
+            "timestamp": datetime.now(timezone.utc).isoformat(),
             "data": update_data
         }
         

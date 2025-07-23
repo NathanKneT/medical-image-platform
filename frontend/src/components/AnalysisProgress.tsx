@@ -104,7 +104,7 @@ export function AnalysisProgress({
   return (
     <Card className={`${config.bgColor} ${config.borderColor} border ${className}`}>
       <CardContent className="p-6">
-        <div className="flex items-start space-x-4">
+        <div className="flex items-start space-x-4 mt-4">
           {/* Status Icon */}
           <div className={`flex-shrink-0 ${config.color}`}>
             {isProcessing ? (

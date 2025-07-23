@@ -404,7 +404,7 @@
           "Analysis"
         ],
         "summary": "Cancel Analysis",
-        "description": "Cancel running analysis.\n\nThis endpoint demonstrates how to handle cancellation of\nlong-running background tasks.\n\nArgs:\n    analysis_id: Unique analysis identifier\n    db: Database session\n    \nReturns:\n    Success message",
+        "description": "Cancel running analysis.\n\nThis endpoint demonstrates how to handle cancellation of\nlong-running background tasks efficiently and without memory overhead.",
         "operationId": "cancel_analysis_api_v1_analysis__analysis_id__delete",
         "parameters": [
           {
