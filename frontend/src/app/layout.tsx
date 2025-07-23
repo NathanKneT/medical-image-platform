@@ -32,6 +32,9 @@ export default function RootLayout({
                   <div className="flex items-center space-x-4">
                     <span className="text-sm text-gray-500">Demo Mode</span>
                   </div>
+                  <div className="flex items-center space-x-4">
+                    <span className="text-sm text-gray-500">Currently : Mock ML</span>
+                  </div>
                 </div>
               </div>
             </nav>

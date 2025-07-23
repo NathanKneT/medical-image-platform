@@ -1,7 +1,7 @@
 'use client';
 
 import { useParams, useRouter } from 'next/navigation';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { 
   ArrowLeft, 
@@ -26,6 +26,8 @@ import { ResultsDisplay } from '@/components/ResultsDisplay';
 import { useImageAnalysis } from '@/hooks/useImageAnalysis';
 import { getMedicalImageAnalysisPlatform } from '@/lib/api-client';
 import { formatDate, formatDuration, getStatusColor } from '@/lib/utils';
+import { downloadAnalysisReport } from '@/lib/pdfReportGenerator';
+import toast from 'react-hot-toast';
 import type { AnalysisResponse, ImageResponse } from '@/lib/api-client';
 
 const api = getMedicalImageAnalysisPlatform();
@@ -43,6 +45,7 @@ export default function AnalysisDetailPage() {
   const router = useRouter();
   const analysisId = params.id as string;
   const [activeTab, setActiveTab] = useState<'overview' | 'results' | 'viewer'>('overview');
+  const [isDownloadingPDF, setIsDownloadingPDF] = useState(false);
 
   // Use the image analysis hook for real-time updates
   const { analysis, isLoading, error, progress, cancelAnalysis, retryAnalysis } = useImageAnalysis(analysisId);
@@ -107,6 +110,22 @@ export default function AnalysisDetailPage() {
   const isComplete = analysis.status === 'COMPLETE';
   const isFailed = analysis.status === 'FAILED' || analysis.status === 'CANCELLED';
 
+  // Handle PDF download
+  const handleDownloadReport = async () => {
+    if (!analysis) return;
+    
+    setIsDownloadingPDF(true);
+    try {
+      await downloadAnalysisReport(analysis.id, analysis, imageData);
+      toast.success('PDF report downloaded successfully!');
+    } catch (error) {
+      toast.error('Failed to generate PDF report');
+      console.error('PDF generation error:', error);
+    } finally {
+      setIsDownloadingPDF(false);
+    }
+  };
+
   const tabs = [
     { id: 'overview', label: 'Overview', icon: Eye },
     { id: 'results', label: 'Results', icon: Brain, disabled: !isComplete },
@@ -140,9 +159,14 @@ export default function AnalysisDetailPage() {
           <div className="flex items-center space-x-3">
             {isComplete && (
               <>
-                <Button variant="outline" size="sm">
+                <Button 
+                  variant="outline" 
+                  size="sm"
+                  onClick={handleDownloadReport}
+                  disabled={isDownloadingPDF}
+                >
                   <Download className="h-4 w-4 mr-2" />
-                  Export
+                  {isDownloadingPDF ? 'Generating...' : 'Download Report'}
                 </Button>
                 <Button variant="outline" size="sm">
                   <Share2 className="h-4 w-4 mr-2" />

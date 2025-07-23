@@ -26,12 +26,13 @@ export interface UseImageAnalysisReturn {
 export function useImageAnalysis(analysisId?: string): UseImageAnalysisReturn {
   const [error, setError] = useState<string | null>(null);
   const [progress, setProgress] = useState(0);
+  const [isStarting, setIsStarting] = useState(false);
 
   const queryClient = useQueryClient();
   const currentAnalysisId = useRef<string | null>(analysisId || null);
   const retryParams = useRef<AnalysisRequest | null>(null);
 
-  // Query for analysis data
+  // Query for analysis data with more aggressive polling during active states
   const { data: analysis, isLoading } = useQuery({
     queryKey: ['analysis', currentAnalysisId.current],
     queryFn: async () => {
@@ -42,68 +43,100 @@ export function useImageAnalysis(analysisId?: string): UseImageAnalysisReturn {
     enabled: !!currentAnalysisId.current,
     refetchInterval: (query: Query<AnalysisResponse | null>) => {
       const data = query.state.data;
-      return data?.status && !['COMPLETE', 'FAILED', 'CANCELLED'].includes(data.status)
-        ? 5000
-        : false;
+      if (data?.status && !['COMPLETE', 'FAILED', 'CANCELLED'].includes(data.status)) {
+        return 2000; // Poll every 2 seconds during active analysis
+      }
+      return false;
     },
+    // Retry failed requests more aggressively
+    retry: 3,
+    retryDelay: 1000,
   });
 
-  // Handle WebSocket analysis updates
+  // Handle WebSocket analysis updates with better error handling
   const handleAnalysisUpdate = useCallback(
     (data: any) => {
       console.log('📊 Analysis update received:', data);
 
-      if (typeof data.progress === 'number') {
-        setProgress(data.progress);
-      }
-
-      if (data.error) {
-        setError(data.error);
-        toast.error(data.error);
-      }
-
-      if (data.status) {
-        queryClient.invalidateQueries({ queryKey: ['analysis', currentAnalysisId.current] });
-
-        if (data.status === 'COMPLETE') {
-          toast.success('Analysis completed successfully!');
-          setProgress(100);
-        } else if (data.status === 'FAILED') {
-          toast.error('Analysis failed');
-          setProgress(0);
+      try {
+        // Update progress immediately
+        if (typeof data.progress === 'number') {
+          setProgress(data.progress);
         }
+
+        // Handle errors
+        if (data.error) {
+          setError(data.error);
+          toast.error(data.error);
+        }
+
+        // Handle status changes
+        if (data.status) {
+          // Invalidate queries to get fresh data
+          queryClient.invalidateQueries({ queryKey: ['analysis', currentAnalysisId.current] });
+          queryClient.invalidateQueries({ queryKey: ['analyses'] });
+
+          if (data.status === 'COMPLETE') {
+            toast.success('Analysis completed successfully!');
+            setProgress(100);
+          } else if (data.status === 'FAILED') {
+            toast.error('Analysis failed');
+            setProgress(0);
+          } else if (data.status === 'ANALYZING') {
+            // Ensure we show progress for analyzing status
+            if (typeof data.progress === 'number') {
+              setProgress(data.progress);
+            }
+          }
+        }
+      } catch (updateError) {
+        console.error('Error handling analysis update:', updateError);
       }
     },
     [queryClient]
   );
 
-  // Start analysis mutation
+  // Start analysis mutation with better state management
   const startAnalysisMutation = useMutation<
     AnalysisStartResponse,
     AxiosError,
     AnalysisRequest
   >({
     mutationFn: async (request: AnalysisRequest) => {
+      setIsStarting(true);
       const response = await api.startAnalysisApiV1AnalysisStartPost(request);
       return response.data as AnalysisStartResponse;
     },
     onSuccess: (data) => {
+      setIsStarting(false);
       currentAnalysisId.current = data.analysis_id;
       retryParams.current = null;
 
+      // Connect WebSocket immediately
       if (!wsClient.isConnected) {
         wsClient.connect().catch(console.error);
       }
 
+      // Subscribe to analysis updates
       wsClient.subscribeToAnalysis(data.analysis_id, handleAnalysisUpdate);
 
-      toast.success('Analysis started successfully!');
-      setError(null);
+      // Set initial progress and clear errors
       setProgress(0);
+      setError(null);
+      
+      toast.success('Analysis started successfully!');
 
+      // Invalidate and refetch queries immediately
       queryClient.invalidateQueries({ queryKey: ['analysis'] });
+      queryClient.invalidateQueries({ queryKey: ['analyses'] });
+      
+      // Force refetch the specific analysis after a short delay
+      setTimeout(() => {
+        queryClient.invalidateQueries({ queryKey: ['analysis', data.analysis_id] });
+      }, 500);
     },
     onError: (error: any) => {
+      setIsStarting(false);
       const errorMessage =
         error.response?.data?.detail || error.message || 'Failed to start analysis';
       setError(errorMessage);
@@ -125,6 +158,7 @@ export function useImageAnalysis(analysisId?: string): UseImageAnalysisReturn {
       toast.success('Analysis cancelled');
 
       queryClient.invalidateQueries({ queryKey: ['analysis', currentAnalysisId.current] });
+      queryClient.invalidateQueries({ queryKey: ['analyses'] });
     },
     onError: (error: any) => {
       const errorMessage =
@@ -198,9 +232,16 @@ export function useImageAnalysis(analysisId?: string): UseImageAnalysisReturn {
     }
   }, [analysis?.progress_percentage]);
 
+  // Sync error state with analysis
+  useEffect(() => {
+    if (analysis?.error_message && analysis.status === 'FAILED') {
+      setError(analysis.error_message);
+    }
+  }, [analysis?.error_message, analysis?.status]);
+
   return {
     analysis: analysis ?? null,
-    isLoading: isLoading || startAnalysisMutation.isPending,
+    isLoading: isLoading || startAnalysisMutation.isPending || isStarting,
     error,
     progress,
     startAnalysis,
