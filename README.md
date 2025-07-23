@@ -31,7 +31,7 @@ This project is built on a foundation of clean separation of concerns and robust
 ## Getting Started
 
 ### Prerequisites
-- Node.js 18+
+- Node.js 20+
 - Python 3.11+
 - Docker
 

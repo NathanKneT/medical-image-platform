@@ -3,831 +3,918 @@
  * Do not make direct changes to the file.
  */
 
-
 export interface paths {
-  "/api/v1/images/upload": {
-    /**
-     * Upload Image
-     * @description Upload medical image for analysis.
-     *
-     * This endpoint demonstrates several production patterns:
-     * 1. File validation and security checks
-     * 2. Async file I/O with aiofiles
-     * 3. Metadata extraction from medical images
-     * 4. Background task triggering
-     * 5. Proper error handling and rollback
-     *
-     * Args:
-     *     background_tasks: FastAPI background tasks for async processing
-     *     file: Uploaded file from multipart form
-     *     description: Optional description
-     *     patient_id: Anonymized patient identifier
-     *     user_id: User uploading the file
-     *     db: Database session
-     *
-     * Returns:
-     *     ImageUploadResponse with image metadata and upload status
-     */
-    post: operations["upload_image_api_v1_images_upload_post"];
-  };
-  "/api/v1/images/{image_id}": {
-    /**
-     * Get Image
-     * @description Get image metadata by ID.
-     *
-     * Args:
-     *     image_id: Unique image identifier
-     *     db: Database session
-     *
-     * Returns:
-     *     ImageResponse with complete image metadata
-     */
-    get: operations["get_image_api_v1_images__image_id__get"];
-    /**
-     * Delete Image
-     * @description Delete image and associated file.
-     *
-     * This endpoint demonstrates proper cleanup of both database
-     * records and file system resources.
-     *
-     * Args:
-     *     image_id: Unique image identifier
-     *     db: Database session
-     *
-     * Returns:
-     *     Success message
-     */
-    delete: operations["delete_image_api_v1_images__image_id__delete"];
-  };
-  "/api/v1/images/{image_id}/download": {
-    /**
-     * Download Image
-     * @description Download image file.
-     *
-     * In production, this would typically redirect to a signed URL
-     * from cloud storage (S3, GCS) rather than serving files directly.
-     *
-     * Args:
-     *     image_id: Unique image identifier
-     *     db: Database session
-     *
-     * Returns:
-     *     FileResponse with image content
-     */
-    get: operations["download_image_api_v1_images__image_id__download_get"];
-  };
-  "/api/v1/images/": {
-    /**
-     * List Images
-     * @description List images with optional filtering.
-     *
-     * Args:
-     *     skip: Number of records to skip (pagination)
-     *     limit: Maximum number of records to return
-     *     user_id: Filter by user who uploaded
-     *     modality: Filter by imaging modality
-     *     db: Database session
-     *
-     * Returns:
-     *     List of ImageResponse objects
-     */
-    get: operations["list_images_api_v1_images__get"];
-  };
-  "/api/v1/analysis/start": {
-    /**
-     * Start Analysis
-     * @description Start AI analysis for an uploaded image.
-     *
-     * This endpoint demonstrates the async processing pattern:
-     * 1. Immediately create analysis record
-     * 2. Return task ID to client
-     * 3. Process in background
-     * 4. Send updates via WebSocket
-     *
-     * Args:
-     *     request: Analysis request with image and model IDs
-     *     background_tasks: FastAPI background tasks
-     *     db: Database session
-     *
-     * Returns:
-     *     AnalysisStartResponse with task ID for tracking
-     */
-    post: operations["start_analysis_api_v1_analysis_start_post"];
-  };
-  "/api/v1/analysis/{analysis_id}": {
-    /**
-     * Get Analysis Result
-     * @description Get analysis result by ID.
-     *
-     * This endpoint provides the current status and results of an analysis.
-     * Clients can poll this endpoint or use WebSocket for real-time updates.
-     *
-     * Args:
-     *     analysis_id: Unique analysis identifier
-     *     db: Database session
-     *
-     * Returns:
-     *     AnalysisResponse with current status and results
-     */
-    get: operations["get_analysis_result_api_v1_analysis__analysis_id__get"];
-    /**
-     * Cancel Analysis
-     * @description Cancel running analysis.
-     *
-     * This endpoint demonstrates how to handle cancellation of
-     * long-running background tasks.
-     *
-     * Args:
-     *     analysis_id: Unique analysis identifier
-     *     db: Database session
-     *
-     * Returns:
-     *     Success message
-     */
-    delete: operations["cancel_analysis_api_v1_analysis__analysis_id__delete"];
-  };
-  "/api/v1/analysis/": {
-    /**
-     * List Analyses
-     * @description List analysis results with optional filtering.
-     *
-     * Args:
-     *     skip: Number of records to skip (pagination)
-     *     limit: Maximum number of records to return
-     *     status: Filter by analysis status
-     *     user_id: Filter by user who requested analysis
-     *     db: Database session
-     *
-     * Returns:
-     *     List of AnalysisResponse objects
-     */
-    get: operations["list_analyses_api_v1_analysis__get"];
-  };
-  "/api/v1/analysis/models/": {
-    /**
-     * List Ai Models
-     * @description List available AI models.
-     *
-     * Args:
-     *     active_only: Whether to return only active models
-     *     db: Database session
-     *
-     * Returns:
-     *     List of AI model information
-     */
-    get: operations["list_ai_models_api_v1_analysis_models__get"];
-  };
-  "/": {
-    /**
-     * Root
-     * @description Root endpoint with API documentation links
-     */
-    get: operations["root__get"];
-  };
-  "/health": {
-    /**
-     * Health Check
-     * @description Comprehensive health check endpoint
-     */
-    get: operations["health_check_health_get"];
-  };
+    "/api/v1/images/upload": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Upload Image
+         * @description Upload medical image for analysis.
+         *
+         *     This endpoint demonstrates several production patterns:
+         *     1. File validation and security checks
+         *     2. Async file I/O with aiofiles
+         *     3. Metadata extraction from medical images
+         *     4. Background task triggering
+         *     5. Proper error handling and rollback
+         *
+         *     Args:
+         *         background_tasks: FastAPI background tasks for async processing
+         *         file: Uploaded file from multipart form
+         *         description: Optional description
+         *         patient_id: Anonymized patient identifier
+         *         user_id: User uploading the file
+         *         db: Database session
+         *
+         *     Returns:
+         *         ImageUploadResponse with image metadata and upload status
+         */
+        post: operations["upload_image_api_v1_images_upload_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/images/{image_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Get Image
+         * @description Get image metadata by ID.
+         *
+         *     Args:
+         *         image_id: Unique image identifier
+         *         db: Database session
+         *
+         *     Returns:
+         *         ImageResponse with complete image metadata
+         */
+        get: operations["get_image_api_v1_images__image_id__get"];
+        put?: never;
+        post?: never;
+        /**
+         * Delete Image
+         * @description Delete image and associated file.
+         *
+         *     This endpoint demonstrates proper cleanup of both database
+         *     records and file system resources.
+         *
+         *     Args:
+         *         image_id: Unique image identifier
+         *         db: Database session
+         *
+         *     Returns:
+         *         Success message
+         */
+        delete: operations["delete_image_api_v1_images__image_id__delete"];
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/images/{image_id}/download": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Download Image
+         * @description Download image file.
+         *
+         *     In production, this would typically redirect to a signed URL
+         *     from cloud storage (S3, GCS) rather than serving files directly.
+         *
+         *     Args:
+         *         image_id: Unique image identifier
+         *         db: Database session
+         *
+         *     Returns:
+         *         FileResponse with image content
+         */
+        get: operations["download_image_api_v1_images__image_id__download_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/images/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * List Images
+         * @description List images with optional filtering.
+         *
+         *     Args:
+         *         skip: Number of records to skip (pagination)
+         *         limit: Maximum number of records to return
+         *         user_id: Filter by user who uploaded
+         *         modality: Filter by imaging modality
+         *         db: Database session
+         *
+         *     Returns:
+         *         List of ImageResponse objects
+         */
+        get: operations["list_images_api_v1_images__get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/analysis/start": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Start Analysis
+         * @description Start AI analysis for an uploaded image.
+         *
+         *     This endpoint demonstrates the async processing pattern:
+         *     1. Immediately create analysis record
+         *     2. Return task ID to client
+         *     3. Process in background
+         *     4. Send updates via WebSocket
+         *
+         *     Args:
+         *         request: Analysis request with image and model IDs
+         *         background_tasks: FastAPI background tasks
+         *         db: Database session
+         *
+         *     Returns:
+         *         AnalysisStartResponse with task ID for tracking
+         */
+        post: operations["start_analysis_api_v1_analysis_start_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/analysis/{analysis_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Get Analysis Result
+         * @description Get analysis result by ID.
+         *
+         *     This endpoint provides the current status and results of an analysis.
+         *     Clients can poll this endpoint or use WebSocket for real-time updates.
+         *
+         *     Args:
+         *         analysis_id: Unique analysis identifier
+         *         db: Database session
+         *
+         *     Returns:
+         *         AnalysisResponse with current status and results
+         */
+        get: operations["get_analysis_result_api_v1_analysis__analysis_id__get"];
+        put?: never;
+        post?: never;
+        /**
+         * Cancel Analysis
+         * @description Cancel running analysis.
+         *
+         *     This endpoint demonstrates how to handle cancellation of
+         *     long-running background tasks.
+         *
+         *     Args:
+         *         analysis_id: Unique analysis identifier
+         *         db: Database session
+         *
+         *     Returns:
+         *         Success message
+         */
+        delete: operations["cancel_analysis_api_v1_analysis__analysis_id__delete"];
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/analysis/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * List Analyses
+         * @description List analysis results with optional filtering.
+         *
+         *     Args:
+         *         skip: Number of records to skip (pagination)
+         *         limit: Maximum number of records to return
+         *         status: Filter by analysis status
+         *         user_id: Filter by user who requested analysis
+         *         db: Database session
+         *
+         *     Returns:
+         *         List of AnalysisResponse objects
+         */
+        get: operations["list_analyses_api_v1_analysis__get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/analysis/models/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * List Ai Models
+         * @description List available AI models.
+         *
+         *     Args:
+         *         active_only: Whether to return only active models
+         *         db: Database session
+         *
+         *     Returns:
+         *         List of AI model information
+         */
+        get: operations["list_ai_models_api_v1_analysis_models__get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Root
+         * @description Root endpoint with API documentation links
+         */
+        get: operations["root__get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/health": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Health Check
+         * @description Comprehensive health check endpoint
+         */
+        get: operations["health_check_health_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
 }
-
 export type webhooks = Record<string, never>;
-
 export interface components {
-  schemas: {
-    /**
-     * AnalysisRequest
-     * @description Request schema for starting AI analysis.
-     */
-    AnalysisRequest: {
-      /**
-       * Image Id
-       * @description ID of image to analyze
-       */
-      image_id: string;
-      /**
-       * Model Id
-       * @description ID of AI model to use
-       */
-      model_id: string;
-      /**
-       * User Id
-       * @description User requesting the analysis
-       */
-      user_id?: string | null;
-      /**
-       * Priority
-       * @description Analysis priority: low, normal, high
-       * @default normal
-       */
-      priority?: string | null;
+    schemas: {
+        /**
+         * AnalysisRequest
+         * @description Request schema for starting AI analysis.
+         */
+        AnalysisRequest: {
+            /**
+             * Image Id
+             * @description ID of image to analyze
+             */
+            image_id: string;
+            /**
+             * Model Id
+             * @description ID of AI model to use
+             */
+            model_id: string;
+            /**
+             * User Id
+             * @description User requesting the analysis
+             */
+            user_id?: string | null;
+            /**
+             * Priority
+             * @description Analysis priority: low, normal, high
+             * @default normal
+             */
+            priority: string | null;
+        };
+        /**
+         * AnalysisResponse
+         * @description Complete analysis result response schema.
+         */
+        AnalysisResponse: {
+            /** Id */
+            id: string;
+            /** Image Id */
+            image_id: string;
+            /** Ai Model Id */
+            ai_model_id: string;
+            status: components["schemas"]["AnalysisStatus"];
+            /** Progress Percentage */
+            progress_percentage: number;
+            /** Confidence Score */
+            confidence_score?: number | null;
+            /** Results */
+            results?: Record<string, never> | null;
+            /** Error Message */
+            error_message?: string | null;
+            /** Error Code */
+            error_code?: string | null;
+            /** Processing Time Seconds */
+            processing_time_seconds?: number | null;
+            /**
+             * Created At
+             * Format: date-time
+             */
+            created_at: string;
+            /**
+             * Updated At
+             * Format: date-time
+             */
+            updated_at: string;
+            /** Image Filename */
+            image_filename?: string | null;
+            /** Model Name */
+            model_name?: string | null;
+            /** Model Version */
+            model_version?: string | null;
+        };
+        /**
+         * AnalysisStartResponse
+         * @description Response schema for analysis start request.
+         */
+        AnalysisStartResponse: {
+            /**
+             * Analysis Id
+             * @description Unique analysis identifier for tracking
+             */
+            analysis_id: string;
+            /** @description Initial analysis status */
+            status: components["schemas"]["AnalysisStatus"];
+            /**
+             * Message
+             * @description Success message
+             */
+            message: string;
+            /**
+             * Estimated Completion Time
+             * @description Estimated completion time in seconds
+             */
+            estimated_completion_time: number;
+            /**
+             * Websocket Url
+             * @description WebSocket URL for real-time updates
+             */
+            websocket_url?: string | null;
+        };
+        /**
+         * AnalysisStatus
+         * @description Analysis status enumeration.
+         * @enum {string}
+         */
+        AnalysisStatus: "PENDING" | "ANALYZING" | "COMPLETE" | "FAILED" | "CANCELLED";
+        /** Body_upload_image_api_v1_images_upload_post */
+        Body_upload_image_api_v1_images_upload_post: {
+            /**
+             * File
+             * Format: binary
+             */
+            file: string;
+        };
+        /** HTTPValidationError */
+        HTTPValidationError: {
+            /** Detail */
+            detail?: components["schemas"]["ValidationError"][];
+        };
+        /**
+         * ImageResponse
+         * @description Complete image metadata response schema.
+         */
+        ImageResponse: {
+            /** Id */
+            id: string;
+            /** Filename */
+            filename: string;
+            /** File Size */
+            file_size: number;
+            /** Mime Type */
+            mime_type: string;
+            /** Width */
+            width?: number | null;
+            /** Height */
+            height?: number | null;
+            /** Modality */
+            modality?: string | null;
+            /** Patient Id */
+            patient_id?: string | null;
+            /** Description */
+            description?: string | null;
+            /**
+             * Is Processed
+             * @default false
+             */
+            is_processed: boolean;
+            /** Uploaded By */
+            uploaded_by?: string | null;
+            /**
+             * Created At
+             * Format: date-time
+             */
+            created_at: string;
+            /**
+             * Updated At
+             * Format: date-time
+             */
+            updated_at: string;
+        };
+        /**
+         * ImageUploadResponse
+         * @description Response schema for successful image upload.
+         */
+        ImageUploadResponse: {
+            /**
+             * Id
+             * @description Unique image identifier
+             */
+            id: string;
+            /**
+             * Filename
+             * @description Original filename
+             */
+            filename: string;
+            /**
+             * File Size
+             * @description File size in bytes
+             */
+            file_size: number;
+            /**
+             * Mime Type
+             * @description MIME type of the file
+             */
+            mime_type: string;
+            /**
+             * Width
+             * @description Image width in pixels
+             */
+            width?: number | null;
+            /**
+             * Height
+             * @description Image height in pixels
+             */
+            height?: number | null;
+            /**
+             * Modality
+             * @description Medical imaging modality
+             */
+            modality?: string | null;
+            /**
+             * Upload Url
+             * @description URL to download the uploaded image
+             */
+            upload_url: string;
+            /**
+             * Created At
+             * Format: date-time
+             * @description Upload timestamp
+             */
+            created_at: string;
+            /**
+             * Message
+             * @description Success message
+             */
+            message: string;
+        };
+        /** ValidationError */
+        ValidationError: {
+            /** Location */
+            loc: (string | number)[];
+            /** Message */
+            msg: string;
+            /** Error Type */
+            type: string;
+        };
     };
-    /**
-     * AnalysisResponse
-     * @description Complete analysis result response schema.
-     */
-    AnalysisResponse: {
-      /** Id */
-      id: string;
-      /** Image Id */
-      image_id: string;
-      /** Ai Model Id */
-      ai_model_id: string;
-      status: components["schemas"]["AnalysisStatus"];
-      /** Progress Percentage */
-      progress_percentage: number;
-      /** Confidence Score */
-      confidence_score?: number | null;
-      /** Results */
-      results?: Record<string, never> | null;
-      /** Error Message */
-      error_message?: string | null;
-      /** Error Code */
-      error_code?: string | null;
-      /** Processing Time Seconds */
-      processing_time_seconds?: number | null;
-      /**
-       * Created At
-       * Format: date-time
-       */
-      created_at: string;
-      /**
-       * Updated At
-       * Format: date-time
-       */
-      updated_at: string;
-      /** Image Filename */
-      image_filename?: string | null;
-      /** Model Name */
-      model_name?: string | null;
-      /** Model Version */
-      model_version?: string | null;
-    };
-    /**
-     * AnalysisStartResponse
-     * @description Response schema for analysis start request.
-     */
-    AnalysisStartResponse: {
-      /**
-       * Analysis Id
-       * @description Unique analysis identifier for tracking
-       */
-      analysis_id: string;
-      /** @description Initial analysis status */
-      status: components["schemas"]["AnalysisStatus"];
-      /**
-       * Message
-       * @description Success message
-       */
-      message: string;
-      /**
-       * Estimated Completion Time
-       * @description Estimated completion time in seconds
-       */
-      estimated_completion_time: number;
-      /**
-       * Websocket Url
-       * @description WebSocket URL for real-time updates
-       */
-      websocket_url?: string | null;
-    };
-    /**
-     * AnalysisStatus
-     * @description Analysis status enumeration.
-     * @enum {string}
-     */
-    AnalysisStatus: "PENDING" | "ANALYZING" | "COMPLETE" | "FAILED" | "CANCELLED";
-    /** Body_upload_image_api_v1_images_upload_post */
-    Body_upload_image_api_v1_images_upload_post: {
-      /**
-       * File
-       * Format: binary
-       */
-      file: string;
-    };
-    /** HTTPValidationError */
-    HTTPValidationError: {
-      /** Detail */
-      detail?: components["schemas"]["ValidationError"][];
-    };
-    /**
-     * ImageResponse
-     * @description Complete image metadata response schema.
-     */
-    ImageResponse: {
-      /** Id */
-      id: string;
-      /** Filename */
-      filename: string;
-      /** File Size */
-      file_size: number;
-      /** Mime Type */
-      mime_type: string;
-      /** Width */
-      width?: number | null;
-      /** Height */
-      height?: number | null;
-      /** Modality */
-      modality?: string | null;
-      /** Patient Id */
-      patient_id?: string | null;
-      /** Description */
-      description?: string | null;
-      /**
-       * Is Processed
-       * @default false
-       */
-      is_processed?: boolean;
-      /** Uploaded By */
-      uploaded_by?: string | null;
-      /**
-       * Created At
-       * Format: date-time
-       */
-      created_at: string;
-      /**
-       * Updated At
-       * Format: date-time
-       */
-      updated_at: string;
-    };
-    /**
-     * ImageUploadResponse
-     * @description Response schema for successful image upload.
-     */
-    ImageUploadResponse: {
-      /**
-       * Id
-       * @description Unique image identifier
-       */
-      id: string;
-      /**
-       * Filename
-       * @description Original filename
-       */
-      filename: string;
-      /**
-       * File Size
-       * @description File size in bytes
-       */
-      file_size: number;
-      /**
-       * Mime Type
-       * @description MIME type of the file
-       */
-      mime_type: string;
-      /**
-       * Width
-       * @description Image width in pixels
-       */
-      width?: number | null;
-      /**
-       * Height
-       * @description Image height in pixels
-       */
-      height?: number | null;
-      /**
-       * Modality
-       * @description Medical imaging modality
-       */
-      modality?: string | null;
-      /**
-       * Upload Url
-       * @description URL to download the uploaded image
-       */
-      upload_url: string;
-      /**
-       * Created At
-       * Format: date-time
-       * @description Upload timestamp
-       */
-      created_at: string;
-      /**
-       * Message
-       * @description Success message
-       */
-      message: string;
-    };
-    /** ValidationError */
-    ValidationError: {
-      /** Location */
-      loc: (string | number)[];
-      /** Message */
-      msg: string;
-      /** Error Type */
-      type: string;
-    };
-  };
-  responses: never;
-  parameters: never;
-  requestBodies: never;
-  headers: never;
-  pathItems: never;
+    responses: never;
+    parameters: never;
+    requestBodies: never;
+    headers: never;
+    pathItems: never;
 }
-
 export type $defs = Record<string, never>;
-
-export type external = Record<string, never>;
-
 export interface operations {
-
-  /**
-   * Upload Image
-   * @description Upload medical image for analysis.
-   *
-   * This endpoint demonstrates several production patterns:
-   * 1. File validation and security checks
-   * 2. Async file I/O with aiofiles
-   * 3. Metadata extraction from medical images
-   * 4. Background task triggering
-   * 5. Proper error handling and rollback
-   *
-   * Args:
-   *     background_tasks: FastAPI background tasks for async processing
-   *     file: Uploaded file from multipart form
-   *     description: Optional description
-   *     patient_id: Anonymized patient identifier
-   *     user_id: User uploading the file
-   *     db: Database session
-   *
-   * Returns:
-   *     ImageUploadResponse with image metadata and upload status
-   */
-  upload_image_api_v1_images_upload_post: {
-    parameters: {
-      query?: {
-        description?: string | null;
-        patient_id?: string | null;
-        user_id?: string | null;
-      };
-    };
-    requestBody: {
-      content: {
-        "multipart/form-data": components["schemas"]["Body_upload_image_api_v1_images_upload_post"];
-      };
-    };
-    responses: {
-      /** @description Successful Response */
-      200: {
-        content: {
-          "application/json": components["schemas"]["ImageUploadResponse"];
+    upload_image_api_v1_images_upload_post: {
+        parameters: {
+            query?: {
+                description?: string | null;
+                patient_id?: string | null;
+                user_id?: string | null;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
         };
-      };
-      /** @description Validation Error */
-      422: {
-        content: {
-          "application/json": components["schemas"]["HTTPValidationError"];
+        requestBody: {
+            content: {
+                "multipart/form-data": components["schemas"]["Body_upload_image_api_v1_images_upload_post"];
+            };
         };
-      };
-    };
-  };
-  /**
-   * Get Image
-   * @description Get image metadata by ID.
-   *
-   * Args:
-   *     image_id: Unique image identifier
-   *     db: Database session
-   *
-   * Returns:
-   *     ImageResponse with complete image metadata
-   */
-  get_image_api_v1_images__image_id__get: {
-    parameters: {
-      path: {
-        image_id: string;
-      };
-    };
-    responses: {
-      /** @description Successful Response */
-      200: {
-        content: {
-          "application/json": components["schemas"]["ImageResponse"];
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ImageUploadResponse"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
         };
-      };
-      /** @description Validation Error */
-      422: {
-        content: {
-          "application/json": components["schemas"]["HTTPValidationError"];
-        };
-      };
     };
-  };
-  /**
-   * Delete Image
-   * @description Delete image and associated file.
-   *
-   * This endpoint demonstrates proper cleanup of both database
-   * records and file system resources.
-   *
-   * Args:
-   *     image_id: Unique image identifier
-   *     db: Database session
-   *
-   * Returns:
-   *     Success message
-   */
-  delete_image_api_v1_images__image_id__delete: {
-    parameters: {
-      path: {
-        image_id: string;
-      };
-    };
-    responses: {
-      /** @description Successful Response */
-      200: {
-        content: {
-          "application/json": unknown;
+    get_image_api_v1_images__image_id__get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                image_id: string;
+            };
+            cookie?: never;
         };
-      };
-      /** @description Validation Error */
-      422: {
-        content: {
-          "application/json": components["schemas"]["HTTPValidationError"];
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ImageResponse"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
         };
-      };
     };
-  };
-  /**
-   * Download Image
-   * @description Download image file.
-   *
-   * In production, this would typically redirect to a signed URL
-   * from cloud storage (S3, GCS) rather than serving files directly.
-   *
-   * Args:
-   *     image_id: Unique image identifier
-   *     db: Database session
-   *
-   * Returns:
-   *     FileResponse with image content
-   */
-  download_image_api_v1_images__image_id__download_get: {
-    parameters: {
-      path: {
-        image_id: string;
-      };
-    };
-    responses: {
-      /** @description Successful Response */
-      200: {
-        content: {
-          "application/json": unknown;
+    delete_image_api_v1_images__image_id__delete: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                image_id: string;
+            };
+            cookie?: never;
         };
-      };
-      /** @description Validation Error */
-      422: {
-        content: {
-          "application/json": components["schemas"]["HTTPValidationError"];
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": unknown;
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
         };
-      };
     };
-  };
-  /**
-   * List Images
-   * @description List images with optional filtering.
-   *
-   * Args:
-   *     skip: Number of records to skip (pagination)
-   *     limit: Maximum number of records to return
-   *     user_id: Filter by user who uploaded
-   *     modality: Filter by imaging modality
-   *     db: Database session
-   *
-   * Returns:
-   *     List of ImageResponse objects
-   */
-  list_images_api_v1_images__get: {
-    parameters: {
-      query?: {
-        skip?: number;
-        limit?: number;
-        user_id?: string | null;
-        modality?: string | null;
-      };
-    };
-    responses: {
-      /** @description Successful Response */
-      200: {
-        content: {
-          "application/json": components["schemas"]["ImageResponse"][];
+    download_image_api_v1_images__image_id__download_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                image_id: string;
+            };
+            cookie?: never;
         };
-      };
-      /** @description Validation Error */
-      422: {
-        content: {
-          "application/json": components["schemas"]["HTTPValidationError"];
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": unknown;
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
         };
-      };
     };
-  };
-  /**
-   * Start Analysis
-   * @description Start AI analysis for an uploaded image.
-   *
-   * This endpoint demonstrates the async processing pattern:
-   * 1. Immediately create analysis record
-   * 2. Return task ID to client
-   * 3. Process in background
-   * 4. Send updates via WebSocket
-   *
-   * Args:
-   *     request: Analysis request with image and model IDs
-   *     background_tasks: FastAPI background tasks
-   *     db: Database session
-   *
-   * Returns:
-   *     AnalysisStartResponse with task ID for tracking
-   */
-  start_analysis_api_v1_analysis_start_post: {
-    requestBody: {
-      content: {
-        "application/json": components["schemas"]["AnalysisRequest"];
-      };
-    };
-    responses: {
-      /** @description Successful Response */
-      200: {
-        content: {
-          "application/json": components["schemas"]["AnalysisStartResponse"];
+    list_images_api_v1_images__get: {
+        parameters: {
+            query?: {
+                skip?: number;
+                limit?: number;
+                user_id?: string | null;
+                modality?: string | null;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
         };
-      };
-      /** @description Validation Error */
-      422: {
-        content: {
-          "application/json": components["schemas"]["HTTPValidationError"];
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ImageResponse"][];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
         };
-      };
     };
-  };
-  /**
-   * Get Analysis Result
-   * @description Get analysis result by ID.
-   *
-   * This endpoint provides the current status and results of an analysis.
-   * Clients can poll this endpoint or use WebSocket for real-time updates.
-   *
-   * Args:
-   *     analysis_id: Unique analysis identifier
-   *     db: Database session
-   *
-   * Returns:
-   *     AnalysisResponse with current status and results
-   */
-  get_analysis_result_api_v1_analysis__analysis_id__get: {
-    parameters: {
-      path: {
-        analysis_id: string;
-      };
-    };
-    responses: {
-      /** @description Successful Response */
-      200: {
-        content: {
-          "application/json": components["schemas"]["AnalysisResponse"];
+    start_analysis_api_v1_analysis_start_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
         };
-      };
-      /** @description Validation Error */
-      422: {
-        content: {
-          "application/json": components["schemas"]["HTTPValidationError"];
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["AnalysisRequest"];
+            };
         };
-      };
-    };
-  };
-  /**
-   * Cancel Analysis
-   * @description Cancel running analysis.
-   *
-   * This endpoint demonstrates how to handle cancellation of
-   * long-running background tasks.
-   *
-   * Args:
-   *     analysis_id: Unique analysis identifier
-   *     db: Database session
-   *
-   * Returns:
-   *     Success message
-   */
-  cancel_analysis_api_v1_analysis__analysis_id__delete: {
-    parameters: {
-      path: {
-        analysis_id: string;
-      };
-    };
-    responses: {
-      /** @description Successful Response */
-      200: {
-        content: {
-          "application/json": unknown;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AnalysisStartResponse"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
         };
-      };
-      /** @description Validation Error */
-      422: {
-        content: {
-          "application/json": components["schemas"]["HTTPValidationError"];
-        };
-      };
     };
-  };
-  /**
-   * List Analyses
-   * @description List analysis results with optional filtering.
-   *
-   * Args:
-   *     skip: Number of records to skip (pagination)
-   *     limit: Maximum number of records to return
-   *     status: Filter by analysis status
-   *     user_id: Filter by user who requested analysis
-   *     db: Database session
-   *
-   * Returns:
-   *     List of AnalysisResponse objects
-   */
-  list_analyses_api_v1_analysis__get: {
-    parameters: {
-      query?: {
-        skip?: number;
-        limit?: number;
-        status?: components["schemas"]["AnalysisStatus"] | null;
-        user_id?: string | null;
-      };
-    };
-    responses: {
-      /** @description Successful Response */
-      200: {
-        content: {
-          "application/json": components["schemas"]["AnalysisResponse"][];
+    get_analysis_result_api_v1_analysis__analysis_id__get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                analysis_id: string;
+            };
+            cookie?: never;
         };
-      };
-      /** @description Validation Error */
-      422: {
-        content: {
-          "application/json": components["schemas"]["HTTPValidationError"];
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AnalysisResponse"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
         };
-      };
     };
-  };
-  /**
-   * List Ai Models
-   * @description List available AI models.
-   *
-   * Args:
-   *     active_only: Whether to return only active models
-   *     db: Database session
-   *
-   * Returns:
-   *     List of AI model information
-   */
-  list_ai_models_api_v1_analysis_models__get: {
-    parameters: {
-      query?: {
-        active_only?: boolean;
-      };
-    };
-    responses: {
-      /** @description Successful Response */
-      200: {
-        content: {
-          "application/json": Record<string, never>[];
+    cancel_analysis_api_v1_analysis__analysis_id__delete: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                analysis_id: string;
+            };
+            cookie?: never;
         };
-      };
-      /** @description Validation Error */
-      422: {
-        content: {
-          "application/json": components["schemas"]["HTTPValidationError"];
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": unknown;
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
         };
-      };
     };
-  };
-  /**
-   * Root
-   * @description Root endpoint with API documentation links
-   */
-  root__get: {
-    responses: {
-      /** @description Successful Response */
-      200: {
-        content: {
-          "text/html": string;
+    list_analyses_api_v1_analysis__get: {
+        parameters: {
+            query?: {
+                skip?: number;
+                limit?: number;
+                status?: components["schemas"]["AnalysisStatus"] | null;
+                user_id?: string | null;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
         };
-      };
-    };
-  };
-  /**
-   * Health Check
-   * @description Comprehensive health check endpoint
-   */
-  health_check_health_get: {
-    responses: {
-      /** @description Successful Response */
-      200: {
-        content: {
-          "application/json": unknown;
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AnalysisResponse"][];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
         };
-      };
     };
-  };
+    list_ai_models_api_v1_analysis_models__get: {
+        parameters: {
+            query?: {
+                active_only?: boolean;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": Record<string, never>[];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    root__get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/html": string;
+                };
+            };
+        };
+    };
+    health_check_health_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": unknown;
+                };
+            };
+        };
+    };
 }
