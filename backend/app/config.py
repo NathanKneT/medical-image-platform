@@ -14,6 +14,8 @@ class Settings(BaseSettings):
     
     # Database configuration
     DATABASE_URL: str = "sqlite+aiosqlite:///./medical_platform.db"
+
+    REDIS_URL: str = "redis://redis:6379/0"
     
     # CORS origins for frontend communication
     CORS_ORIGINS: List[str] = [

@@ -1,12 +1,14 @@
 from contextlib import asynccontextmanager
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import HTMLResponse
 from fastapi.staticfiles import StaticFiles
 import uvicorn
 
 from app.config import settings
 from app.database import init_db  # Direct import is now safe
 from app.middleware.audit_logging import AuditLoggingMiddleware
+from app.api import analysis, images, websocket
 
 
 @asynccontextmanager
@@ -53,29 +55,49 @@ app.add_middleware(AuditLoggingMiddleware)
 # Mount static files for serving uploaded images (demo only)
 app.mount("/uploads", StaticFiles(directory="uploads"), name="uploads")
 
-# API route registration (when ready)
-# app.include_router(images.router, prefix="/api/v1/images", tags=["Images"])
-# app.include_router(analysis.router, prefix="/api/v1/analysis", tags=["Analysis"])
-# app.include_router(websocket.router, prefix="/ws", tags=["WebSocket"])
+# API routes
+app.include_router(images.router, prefix="/api/v1/images", tags=["Images"])
+app.include_router(analysis.router, prefix="/api/v1/analysis", tags=["Analysis"])
+app.include_router(websocket.router, prefix="/ws", tags=["WebSocket"])
 
 
-@app.get("/")
+@app.get("/", response_class=HTMLResponse, tags=["Health"])
 async def root():
-    """Health check endpoint - useful for deployment monitoring"""
-    return {
-        "message": "Medical Image Analysis Platform API",
-        "version": "1.0.0",
-        "status": "healthy"
-    }
+    """Root endpoint with API documentation links"""
+    return """
+    <html>
+        <head><title>Medical Image Analysis Platform</title></head>
+        <body>
+            <h1>🏥 Medical Image Analysis Platform API</h1>
+            <p>Production-ready medical imaging API with AI analysis capabilities.</p>
+            <ul>
+                <li><a href="/docs">📖 Interactive API Documentation (Swagger UI)</a></li>
+                <li><a href="/redoc">📋 API Documentation (ReDoc)</a></li> 
+                <li><a href="/openapi.json">🔗 OpenAPI Schema (JSON)</a></li>
+            </ul>
+            <h2>🚀 Quick Start</h2>
+            <p>Generate TypeScript types for your frontend:</p>
+            <pre><code>npx openapi-typescript http://localhost:8000/openapi.json -o src/types/api.ts</code></pre>
+        </body>
+    </html>
+    """
 
 
-@app.get("/health")
+@app.get("/health", tags=["Health"])
 async def health_check():
-    """Detailed health check for load balancers and monitoring systems"""
+    """Comprehensive health check endpoint"""
     return {
         "status": "healthy",
+        "service": "medical-image-analysis-api",
+        "version": "1.0.0",
+        "timestamp": "2025-01-01T00:00:00Z",
         "database": "connected",
-        "timestamp": "2025-01-01T00:00:00Z"
+        "features": {
+            "image_upload": True,
+            "ai_analysis": True,
+            "websocket": True,
+            "openapi": True
+        }
     }
 
 

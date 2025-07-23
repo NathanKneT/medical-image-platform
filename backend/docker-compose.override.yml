@@ -1,0 +1,14 @@
+services:
+  app:
+    environment:
+      # Override for local development
+      - DEBUG=true
+      - LOG_LEVEL=debug
+    volumes:
+      # Additional development volumes
+      - ./.env:/app/.env
+    command: >
+      sh -c "
+        echo 'Starting development server...' &&
+        uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload --log-level debug
+      "

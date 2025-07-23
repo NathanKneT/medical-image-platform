@@ -2,8 +2,6 @@
 
 Welcome to the Medical Image Analysis Platform! A comprehensive blueprint for building AI Medical web app. Designed to embody the architectural patterns and best practices required for sensitive domains like healthcare.
 
-At its core, this platform allows users to upload a medical image, have it processed by a long-running AI model on the backend, and receive real-time updates and a 3D visualization of the results—all without freezing the user interface.
-
 ## Core Architecture & Philosophy
 
 This project is built on a foundation of clean separation of concerns and robust, asynchronous communication.
@@ -16,9 +14,6 @@ This project is built on a foundation of clean separation of concerns and robust
 
 ---
 
-## Ready for Your Interview? Key Talking Points
-
-This repository is a living document you can use to discuss deep technical concepts. Here are the patterns it demonstrates:
 
 #### **Architecture Patterns**
 *   **Service & Repository Layers**: We strictly separate business logic (`services`) from data access (`models`), making the code cleaner, easier to test, and more maintainable.
@@ -38,7 +33,7 @@ This repository is a living document you can use to discuss deep technical conce
 ### Prerequisites
 - Node.js 18+
 - Python 3.11+
-- Docker (optional)
+- Docker
 
 ### Local Development
 
@@ -62,6 +57,19 @@ npm run dev
 ```bash
 docker-compose up --build
 ```
+
+# Development workflow commands on Windows
+- Use the provided `dev.ps1` PowerShell script to manage your development workflow.
+
+# Set execution policy (one time)
+Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope CurrentUser
+
+# Use the script
+.\dev.ps1 help
+.\dev.ps1 start    # Build and start everything
+.\dev.ps1 logs
+.\dev.ps1 shell
+.\dev.ps1 down
 
 ### Deployment
 
