@@ -73,3 +73,4 @@ pnpm-debug.log*
 # Misc
 .DS_Store
 backend/medical_platform.db
+/backend/uploads

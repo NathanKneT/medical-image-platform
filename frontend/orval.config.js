@@ -6,8 +6,8 @@ module.exports = {
       client: 'axios',
       override: {
         mutator: {
-          path: 'src/lib/axios-instance.ts',
-          name: 'customInstance'
+          path: 'src/lib/api.ts', 
+          name: 'customApi' 
         }
       }
     },

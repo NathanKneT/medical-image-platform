@@ -50,6 +50,7 @@ uvicorn app.main:app --reload
 ```bash
 cd frontend
 npm install
+npm run generate-api # If you change the backend API, regenerate the client to keep it in sync
 npm run dev
 ```
 
