@@ -1,13 +1,9 @@
 [build]
-  command = "npm run build"
-  
-  publish = ".next"
-
+command = "npm run build"
+publish = ".next"
 [build.environment]
-  NODE_VERSION = "20"
-
+NODE_VERSION = "20"
 [context.production.environment]
-  NODE_ENV = "development"
-  
+NODE_ENV = "production"
 [[plugins]]
-  package = "@netlify/plugin-nextjs"
+package = "@netlify/plugin-nextjs"
