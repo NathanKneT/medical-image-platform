@@ -6,6 +6,8 @@
 [build.environment]
   NODE_VERSION = "20"
 
-
+[context.production.environment]
+  NODE_ENV = "development"
+  
 [[plugins]]
   package = "@netlify/plugin-nextjs"
