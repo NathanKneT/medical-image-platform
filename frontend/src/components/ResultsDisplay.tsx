@@ -6,13 +6,10 @@ import {
   Eye, 
   CheckCircle2,
   Info,
-  Download,
-  Share2,
   BarChart3,
   Activity
 } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
 import { Progress } from '@/components/ui/progress';
 
 interface ResultsDisplayProps {
@@ -29,8 +26,6 @@ const getPrimaryFindingType = (results: any): 'classification' | 'segmentation' 
   if (results?.detection) return 'detection';
   return 'unknown';
 };
-
-// --- RENDER FUNCTIONS FOR EACH RESULT TYPE ---
 
 const renderClassificationResults = (results: any) => (
   <Card>

@@ -35,3 +35,7 @@ httpx==0.25.2
 # Security
 python-jose[cryptography]==3.3.0
 passlib[bcrypt]==1.7.4
+
+# Additional dependencies
+typing-extensions==4.8.0
+python-dotenv==1.0.0

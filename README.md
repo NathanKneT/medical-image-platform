@@ -137,9 +137,11 @@ graph TD
 - Node.js 20+
 - Python 3.11+
 - Docker (optional, for containerized setup)
+- Docker (optional, for containerized setup)
 
 ### Local Development
 
+1. **Backend**:
 1. **Backend**:
 ```bash
 cd backend
@@ -150,13 +152,16 @@ uvicorn app.main:app --reload
 ```
 
 2. **Frontend**:
+2. **Frontend**:
 ```bash
 cd frontend
 npm install
 npm run generate-api  # Regenerate API client if backend changes
+npm run generate-api  # Regenerate API client if backend changes
 npm run dev
 ```
 
+3. **Docker** (Alternative):
 3. **Docker** (Alternative):
 ```bash
 docker-compose up --build
@@ -228,8 +233,85 @@ Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope CurrentUser  # One-time
 - ✅ Dockerized for easy deployment
 
 ---
+4. **Windows Workflow**:
+Use the `dev.ps1` PowerShell script for streamlined development:
+```powershell
+Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope CurrentUser  # One-time setup
+.\dev.ps1 start  # Build and run
+.\dev.ps1 logs   # View logs
+.\dev.ps1 down   # Tear down
+```
+
+---
+
+## Deployment
+
+### Backend (Railway)
+1. Connect your GitHub repo to Railway.
+2. Set environment variables:
+   - `DATABASE_URL`: Provided by Railway’s PostgreSQL.
+   - `CORS_ORIGINS`: Your Netlify frontend URL.
+3. Push to deploy.
+
+### Frontend (Netlify)
+1. Connect your GitHub repo to Netlify.
+2. Configure:
+   - Build command: `npm run build`
+   - Publish directory: `.next`
+   - Environment variables:
+     - `NEXT_PUBLIC_API_URL`: Railway backend URL.
+     - `NEXT_PUBLIC_WS_URL`: WebSocket endpoint.
+
+---
+
+## Technical Roadmap
+
+1. **WebSocket Scaling**:
+   - Current: Single-instance WebSocket connections stored in memory.
+   - Planned: Use Redis Pub/Sub for a distributed message bus, enabling multi-instance real-time communication.
+
+2. **File Storage**:
+   - Current: Local file storage for uploads.
+   - Planned: Migrate to Amazon S3 or Google Cloud Storage with pre-signed URLs for secure, scalable file handling.
+
+3. **ML Pipeline**:
+   - Current: Mock AI analysis with realistic delays and status updates.
+   - Planned: Integrate a real ML pipeline with Celery task queues, model registries (e.g., MLflow), and GPU support.
+
+4. **Authentication**:
+   - Current: Hardcoded demo user.
+   - Planned: Full auth system with user registration, RBAC, and multi-tenancy for medical data isolation.
+
+5. **Repository Pattern**:
+   - Planned: Abstract SQLAlchemy queries into repository classes for better testability and database-agnostic logic.
+
+---
+
+## Demo Features
+
+- ✅ Secure file uploads with progress tracking
+- ✅ Real-time analysis updates via WebSocket
+- ✅ Placeholder 3D scan visualization (WebGL-based)
+- ✅ Type-safe API communication (TypeScript)
+- ✅ Responsive UI with Tailwind CSS
+- ✅ Comprehensive error handling
+- ✅ Audit logging for compliance
+- ✅ Dockerized for easy deployment
+
+---
 
 ## Mock ML Pipeline
+
+The current AI analysis is mocked to simulate:
+- Processing delays (30-60s)
+- Status transitions (PENDING → ANALYZING → COMPLETE)
+- Confidence scores and structured outputs
+- Error simulation for robustness
+
+**To Productionize**:
+1. Replace `mock_ai_analysis` in `analysis_service.py` with real model inference.
+2. Integrate a task queue (e.g., Celery) and model registry.
+3. Optimize for GPU/CPU resource management.
 
 The current AI analysis is mocked to simulate:
 - Processing delays (30-60s)
