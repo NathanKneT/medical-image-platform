@@ -35,13 +35,13 @@ graph TD
     end
 
     %% Flow
-    A -->|1. Login / Upload | B
-    B -->|2. Read / Write| D
-    D -->|3. Return Data| B
-    B -->|4. Return Response| A
+    A -->|Login / Upload | B
+    B -->|Read / Write| D
+    D -->|Return Data| B
+    B -->|Return Response| A
 
-    A <--> |5. Real-time Updates WebSocket| C
-    B --> |6. Triggers Update| C
+    A <--> |Real-time Updates WebSocket| C
+    B --> |Triggers Update| C
 
     style A fill:#007acc,stroke:#333,stroke-width:2px,color:#fff
     style B fill:#009688,stroke:#333,stroke-width:2px,color:#fff
@@ -94,16 +94,16 @@ graph TD
     B2 -->|Read/Write| DB
     Bn -->|Read/Write| DB
 
-    B1 -->|2. Publish Update| R
-    B2 -->|2. Publish Update| R
+    B1 -->|Publish Update| R
+    B2 -->|Publish Update| R
 
-    R -->|3. Broadcast to ALL Instances| C1
-    R -->|3. Broadcast to ALL Instances| C2
-    R -->|3. Broadcast to ALL Instances| Cn
+    R -->|Broadcast to ALL Instances| C1
+    R -->|Broadcast to ALL Instances| C2
+    R -->|Broadcast to ALL Instances| Cn
 
-    C1 -.->|4. Send to User| A
-    C2 -.->|4. Send to User| A
-    Cn -.->|4. Send to User| A
+    C1 -.->|Send to User| A
+    C2 -.->|Send to User| A
+    Cn -.->|Send to User| A
 
     style A fill:#007acc,stroke:#333,stroke-width:2px,color:#fff
     style LB fill:#673ab7,stroke:#333,stroke-width:2px,color:#fff
@@ -153,7 +153,6 @@ uvicorn app.main:app --reload
 ```bash
 cd frontend
 npm install
-npm run generate-api  # Regenerate API client if backend changes
 npm run generate-api  # Regenerate API client if backend changes
 npm run dev
 ```
@@ -228,38 +227,6 @@ Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope CurrentUser  # One-time
 - ✅ Audit logging for compliance
 - ✅ Dockerized for easy deployment
 
----
-4. **Windows Workflow**:
-Use the `dev.ps1` PowerShell script for streamlined development:
-```powershell
-Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope CurrentUser  # One-time setup
-.\dev.ps1 start  # Build and run
-.\dev.ps1 logs   # View logs
-.\dev.ps1 down   # Tear down
-```
-
----
-
-## Deployment
-
-### Backend (Railway)
-1. Connect your GitHub repo to Railway.
-2. Set environment variables:
-   - `DATABASE_URL`: Provided by Railway’s PostgreSQL.
-   - `CORS_ORIGINS`: Your Netlify frontend URL.
-3. Push to deploy.
-
-### Frontend (Netlify)
-1. Connect your GitHub repo to Netlify.
-2. Configure:
-   - Build command: `npm run build`
-   - Publish directory: `.next`
-   - Environment variables:
-     - `NEXT_PUBLIC_API_URL`: Railway backend URL.
-     - `NEXT_PUBLIC_WS_URL`: WebSocket endpoint.
-
----
-
 ## Technical Roadmap
 
 1. **WebSocket Scaling**:
@@ -281,20 +248,6 @@ Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope CurrentUser  # One-time
 5. **Repository Pattern**:
    - Planned: Abstract SQLAlchemy queries into repository classes for better testability and database-agnostic logic.
 
----
-
-## Demo Features
-
-- ✅ Secure file uploads with progress tracking
-- ✅ Real-time analysis updates via WebSocket
-- ✅ Placeholder 3D scan visualization (WebGL-based)
-- ✅ Type-safe API communication (TypeScript)
-- ✅ Responsive UI with Tailwind CSS
-- ✅ Comprehensive error handling
-- ✅ Audit logging for compliance
-- ✅ Dockerized for easy deployment
-
----
 
 ## Mock ML Pipeline
 
