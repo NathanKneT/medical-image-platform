@@ -28,5 +28,4 @@ USER appuser
 
 EXPOSE 8000
 
-# The command needs to reference the app module correctly
-CMD ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8000"]
+CMD ["sh", "-c", "uvicorn app.main:app --host 0.0.0.0 --port ${PORT:-8000}"]
