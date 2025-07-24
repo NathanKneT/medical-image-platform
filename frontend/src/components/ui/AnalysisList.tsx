@@ -138,9 +138,9 @@ export function AnalysisList() {
                       >
                         {analysis.status}
                       </span>
-                      {analysis.model_name && (
+                      {analysis.analysis_model_name && (
                         <span className="text-sm text-gray-500">
-                          {analysis.model_name} v{analysis.model_version}
+                          {analysis.analysis_model_name} v{analysis.analysis_model_version}
                         </span>
                       )}
                     </div>

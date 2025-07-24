@@ -102,7 +102,7 @@ export default function HomePage() {
       {/* Hero Section */}
       <div className="text-center">
         <h1 className="text-4xl font-bold text-gray-900 sm:text-5xl">
-          AI-Powered Medical Image Analysis
+          AI Model Medical Image Analysis
         </h1>
         <p className="mt-4 text-xl text-gray-600 max-w-3xl mx-auto">
           Upload medical images for instant AI analysis with real-time progress tracking
@@ -113,7 +113,7 @@ export default function HomePage() {
       {/* Upload Section */}
       <Card className="p-8">
         <h2 className="text-2xl font-semibold text-gray-900 mb-6">
-          1. Upload Medical Image
+          Upload Medical Image
         </h2>
         <ImageUpload
           onUploadSuccess={handleUploadSuccess}
@@ -125,7 +125,7 @@ export default function HomePage() {
       {uploadedImage && (
         <Card className="p-8">
           <h2 className="text-2xl font-semibold text-gray-900 mb-6">
-            2. Start Analysis
+            Start Analysis
           </h2>
           {!isAnalysisRunning ? (
             <div className="space-y-4">
@@ -167,7 +167,7 @@ export default function HomePage() {
                   <AnalysisProgress
                     status={analysis.status}
                     progress={progress}
-                    modelName={analysis.model_name || undefined}
+                    modelName={analysis.analysis_model_name || undefined}
                     error={error}
                   />
                   <div className="flex space-x-4">

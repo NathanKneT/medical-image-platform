@@ -15,7 +15,8 @@ import {
   Eye,
   Zap,
   Brain,
-  Heart
+  Heart,
+  Home
 } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -144,7 +145,8 @@ export default function AnalysisDetailPage() {
               className="flex items-center"
             >
               <ArrowLeft className="h-4 w-4 mr-2" />
-              Back to Home
+              <Home>
+                </Home>
             </Button>
             <div>
               <h1 className="text-2xl font-bold text-gray-900">
@@ -168,10 +170,7 @@ export default function AnalysisDetailPage() {
                   <Download className="h-4 w-4 mr-2" />
                   {isDownloadingPDF ? 'Generating...' : 'Download Report'}
                 </Button>
-                <Button variant="outline" size="sm">
-                  <Share2 className="h-4 w-4 mr-2" />
-                  Share
-                </Button>
+
               </>
             )}
           </div>
@@ -182,7 +181,7 @@ export default function AnalysisDetailPage() {
           <AnalysisProgress
             status={analysis.status}
             progress={progress}
-            modelName={analysis.model_name || undefined}
+            modelName={analysis.analysis_model_name || undefined}
             error={error}
             onCancel={isProcessing ? cancelAnalysis : undefined}
             onRetry={isFailed ? retryAnalysis : undefined}
@@ -250,9 +249,9 @@ export default function AnalysisDetailPage() {
                           Model Used
                         </h4>
                         <p className="text-sm text-gray-900">
-                          {analysis.model_name || 'Unknown Model'} 
-                          {analysis.model_version && (
-                            <span className="text-gray-500 ml-1">v{analysis.model_version}</span>
+                          {analysis.analysis_model_name || 'Unknown Model'} 
+                          {analysis.analysis_model_version && (
+                            <span className="text-gray-500 ml-1">v{analysis.analysis_model_version}</span>
                           )}
                         </p>
                       </div>
@@ -381,41 +380,6 @@ export default function AnalysisDetailPage() {
 
           {/* Sidebar */}
           <div className="space-y-6">
-            {/* Quick Actions */}
-            <Card>
-              <CardHeader>
-                <CardTitle className="text-lg">Quick Actions</CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-3">
-                {isComplete && (
-                  <>
-                    <Button className="w-full" variant="outline">
-                      <Download className="h-4 w-4 mr-2" />
-                      Download Report
-                    </Button>
-                    <Button className="w-full" variant="outline">
-                      <Share2 className="h-4 w-4 mr-2" />
-                      Share Results
-                    </Button>
-                  </>
-                )}
-                
-                {isFailed && (
-                  <Button className="w-full" onClick={retryAnalysis}>
-                    <Activity className="h-4 w-4 mr-2" />
-                    Retry Analysis
-                  </Button>
-                )}
-
-                {isProcessing && (
-                  <Button className="w-full" variant="destructive" onClick={cancelAnalysis}>
-                    <XCircle className="h-4 w-4 mr-2" />
-                    Cancel Analysis
-                  </Button>
-                )}
-              </CardContent>
-            </Card>
-
             {/* Key Findings */}
             {isComplete && analysis.results && (
               <Card>

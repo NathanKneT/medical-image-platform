@@ -202,16 +202,6 @@ export function ResultsDisplay({
               <Activity className="h-5 w-5 mr-2 text-primary-600" />
               Analysis Results for {results.model_name} (v{results.model_version})
             </CardTitle>
-            <div className="flex items-center space-x-2">
-              <Button variant="outline" size="sm">
-                <Download className="h-4 w-4 mr-2" />
-                Export
-              </Button>
-              <Button variant="outline" size="sm">
-                <Share2 className="h-4 w-4 mr-2" />
-                Share
-              </Button>
-            </div>
           </div>
         </CardHeader>
         <CardContent>
