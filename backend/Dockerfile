@@ -21,11 +21,16 @@ RUN pip install --no-cache-dir -r requirements.txt
 # Copy app code from backend directory
 COPY backend/app/ /app/app/
 
+# Copy startup script
+COPY backend/start.sh /app/start.sh
+RUN chmod +x /app/start.sh
+
 # Create and set up the non-root user
 RUN useradd --system --create-home appuser
-RUN mkdir -p /app/uploads && chown -R appuser:appuser /app
+RUN mkdir -p /app/uploads && chown -R appuser:appuser /app && chown appuser:appuser /app/start.sh
 USER appuser
 
 EXPOSE 8000
 
-CMD ["sh", "-c", "uvicorn app.main:app --host 0.0.0.0 --port ${PORT:-8000}"]
+# Use the startup script
+CMD ["/app/start.sh"]
