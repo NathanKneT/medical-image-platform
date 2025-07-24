@@ -14,11 +14,12 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 # 2. Production stage
 FROM base as production
 
-
-COPY requirements.txt .
+# Copy requirements from backend directory
+COPY backend/requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
-COPY app/ /app/app/
+# Copy app code from backend directory
+COPY backend/app/ /app/app/
 
 # Create and set up the non-root user
 RUN useradd --system --create-home appuser
