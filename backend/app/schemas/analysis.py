@@ -1,12 +1,14 @@
 from datetime import datetime
 from typing import Optional, Dict, Any
-from pydantic import BaseModel, Field, validator
+from pydantic import BaseModel, Field, validator, ConfigDict
 
 from app.models.analysis import AnalysisStatus
 
 
 class AnalysisRequest(BaseModel):
     """Request schema for starting AI analysis."""
+    
+    model_config = ConfigDict(protected_namespaces=())
     
     image_id: str = Field(..., description="ID of image to analyze")
     model_id: str = Field(..., description="ID of AI model to use")
@@ -24,6 +26,8 @@ class AnalysisRequest(BaseModel):
 class AnalysisStartResponse(BaseModel):
     """Response schema for analysis start request."""
     
+    model_config = ConfigDict(protected_namespaces=())
+    
     analysis_id: str = Field(..., description="Unique analysis identifier for tracking")
     status: AnalysisStatus = Field(..., description="Initial analysis status")
     message: str = Field(..., description="Success message")
@@ -36,6 +40,12 @@ class AnalysisStartResponse(BaseModel):
 
 class AnalysisResponse(BaseModel):
     """Complete analysis result response schema."""
+    
+    model_config = ConfigDict(
+        from_attributes=True,
+        populate_by_name=True,
+        protected_namespaces=()
+    )
     
     id: str
     image_id: str
@@ -54,10 +64,6 @@ class AnalysisResponse(BaseModel):
     image_filename: Optional[str] = Field(None, validation_alias="image.filename")
     analysis_model_name: Optional[str] = Field(None, validation_alias="ai_model.name")
     analysis_model_version: Optional[str] = Field(None, validation_alias="ai_model.version")
-
-    class Config:
-        from_attributes = True # Replaces orm_mode=True in Pydantic v2
-        populate_by_name = True 
 
     @validator("confidence_score")
     def validate_confidence_score(cls, v):
