@@ -6,15 +6,10 @@ PORT=${PORT:-8000}
 echo "Starting server on port $PORT"
 echo "Working directory: $(pwd)"
 
-# Debug: Check database connection
-echo "DEBUG: DATABASE_URL: $DATABASE_URL"
-echo "DEBUG: Checking if DATABASE_URL is set..."
-if [ -z "$DATABASE_URL" ]; then
-    echo "WARNING: DATABASE_URL is not set! Using SQLite fallback."
-    export DATABASE_URL="sqlite+aiosqlite:///./medical_platform.db"
-else
-    echo "DATABASE_URL is set: ${DATABASE_URL:0:50}..." # Show first 50 chars for security
-fi
+# Quick fix: Force SQLite usage for immediate deployment
+echo "DEBUG: Using SQLite database for quick deployment"
+export DATABASE_URL="sqlite+aiosqlite:///./medical_platform.db"
+echo "DEBUG: DATABASE_URL set to: $DATABASE_URL"
 
 # Start the application with PYTHONPATH set inline
 cd /app
