@@ -214,40 +214,6 @@ Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope CurrentUser  # One-time
 5. **Repository Pattern**:
    - Planned: Abstract SQLAlchemy queries into repository classes for better testability and database-agnostic logic.
 
----
-
-## Demo Features
-
-- ✅ Secure file uploads with progress tracking
-- ✅ Real-time analysis updates via WebSocket
-- ✅ Placeholder 3D scan visualization (WebGL-based)
-- ✅ Type-safe API communication (TypeScript)
-- ✅ Responsive UI with Tailwind CSS
-- ✅ Comprehensive error handling
-- ✅ Audit logging for compliance
-- ✅ Dockerized for easy deployment
-
-## Technical Roadmap
-
-1. **WebSocket Scaling**:
-   - Current: Single-instance WebSocket connections stored in memory.
-   - Planned: Use Redis Pub/Sub for a distributed message bus, enabling multi-instance real-time communication.
-
-2. **File Storage**:
-   - Current: Local file storage for uploads.
-   - Planned: Migrate to Amazon S3 or Google Cloud Storage with pre-signed URLs for secure, scalable file handling.
-
-3. **ML Pipeline**:
-   - Current: Mock AI analysis with realistic delays and status updates.
-   - Planned: Integrate a real ML pipeline with Celery task queues, model registries (e.g., MLflow), and GPU support.
-
-4. **Authentication**:
-   - Current: Hardcoded demo user.
-   - Planned: Full auth system with user registration, RBAC, and multi-tenancy for medical data isolation.
-
-5. **Repository Pattern**:
-   - Planned: Abstract SQLAlchemy queries into repository classes for better testability and database-agnostic logic.
-
 
 ## Mock ML Pipeline
 
@@ -261,3 +227,16 @@ The current AI analysis is mocked to simulate:
 1. Replace `mock_ai_analysis` in `analysis_service.py` with real model inference.
 2. Integrate a task queue (e.g., Celery) and model registry.
 3. Optimize for GPU/CPU resource management.
+
+---
+
+## Demo Features
+
+- ✅ Secure file uploads with progress tracking
+- ✅ Real-time analysis updates via WebSocket
+- ✅ Placeholder 3D scan visualization (WebGL-based)
+- ✅ Type-safe API communication (TypeScript)
+- ✅ Responsive UI with Tailwind CSS
+- ✅ Comprehensive error handling
+- ✅ Audit logging for compliance
+- ✅ Dockerized for easy deployment
