@@ -21,7 +21,6 @@ export default function HomePage() {
   
   const { analysis, startAnalysis, progress, isLoading, error, clearError } = useImageAnalysis();
 
-  // This effect for navigation is fine
   useEffect(() => {
     if (analysis?.id) {
       router.push(`/analysis/${analysis.id}`);
@@ -29,29 +28,58 @@ export default function HomePage() {
   }, [analysis?.id, router]);
 
   useEffect(() => {
-    const handleNewAnalysis = (message: { type: string; data: AnalysisResponse }) => {
-      console.log('New analysis message received, updating cache directly:', message.data);
+    const handleBroadcastMessage = (message: any) => {
+      console.log('Broadcast message received:', message);
       
-      // Use setQueryData to optimistically update the list
-      queryClient.setQueryData(['analyses'], (oldData: AnalysisResponse[] | undefined) => {
-        const newAnalysis = message.data;
-        // If the cache is empty, start a new list
-        if (!oldData) {
-          return [newAnalysis];
-        }
-        // Prepend the new analysis to the existing list
-        return [newAnalysis, ...oldData];
-      });
+      if (message.type === 'new_analysis_started' || message.type === 'analysis_update') {
+        const analysisData = message.data;
+        
+        // Update the analyses list immediately
+        queryClient.setQueryData(['analyses'], (oldData: AnalysisResponse[] | undefined) => {
+          if (!oldData) {
+            return [analysisData];
+          }
+          
+          // Check if this analysis already exists in the list
+          const existingIndex = oldData.findIndex((item: AnalysisResponse) => item.id === analysisData.id);
+          
+          if (existingIndex >= 0) {
+            // Update existing analysis
+            const newData = [...oldData];
+            newData[existingIndex] = analysisData;
+            return newData;
+          } else {
+            // Add new analysis to the beginning of the list
+            return [analysisData, ...oldData];
+          }
+        });
+      } else if (message.type === 'analysis_completed' || message.type === 'analysis_failed' || message.type === 'analysis_cancelled') {
+        const analysisData = message.data;
+        
+        // Update the specific analysis in the list
+        queryClient.setQueryData(['analyses'], (oldData: AnalysisResponse[] | undefined) => {
+          if (!oldData) return oldData;
+          
+          return oldData.map((item: AnalysisResponse) => 
+            item.id === analysisData.id ? analysisData : item
+          );
+        });
+        
+        // Also invalidate to ensure we get the latest data from server
+        queryClient.invalidateQueries({ queryKey: ['analyses'] });
+      }
     };
 
+    // Connect to WebSocket if not already connected
     if (!wsClient.isConnected) {
-        wsClient.connect();
+      wsClient.connect();
     }
-    // Subscribe using the new logic from the previous fix
-    wsClient.subscribeToAnalysis('new_analysis_started', handleNewAnalysis);
+    
+    // Subscribe to broadcast messages
+    wsClient.subscribe('broadcast', handleBroadcastMessage);
 
     return () => {
-      wsClient.unsubscribeFromAnalysis('new_analysis_started');
+      wsClient.unsubscribe('broadcast');
     };
   }, [queryClient]);
 

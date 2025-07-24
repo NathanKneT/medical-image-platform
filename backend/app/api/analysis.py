@@ -1,7 +1,7 @@
 from typing import List, Optional
 from fastapi import APIRouter, Depends, HTTPException, BackgroundTasks
 from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy import select, update
+from sqlalchemy import select
 from sqlalchemy.orm import selectinload
 
 from app.database import get_db
@@ -29,12 +29,13 @@ async def start_analysis(
     ...
     """
     try:
-        # This call now correctly matches the updated service method
+        # Pass the websocket manager to the service
         analysis = await AnalysisService.start_analysis(
             db=db,
             image_id=request.image_id,
             model_id=request.model_id,
-            user_id=request.user_id
+            user_id=request.user_id,
+            websocket_manager=manager  # Add this parameter
         )
         
         background_tasks.add_task(
@@ -177,46 +178,56 @@ async def list_ai_models(
 
 
 @router.delete("/{analysis_id}")
-async def cancel_analysis(
+async def delete_analysis(
     analysis_id: str,
     db: AsyncSession = Depends(get_db)
 ):
     """
-    Cancel running analysis.
+    Delete analysis record.
     
-    This endpoint demonstrates how to handle cancellation of
-    long-running background tasks efficiently and without memory overhead.
+    This endpoint allows deletion of any analysis regardless of status.
+    For running analyses, it will cancel them first, then delete.
+    For completed analyses, it will just delete the record.
     """
 
-    get_stmt = select(AnalysisResult.status).where(AnalysisResult.id == analysis_id)
-    current_status = await db.scalar(get_stmt)
-
-    if not current_status:
-        raise HTTPException(status_code=404, detail="Analysis not found")
-    
-    if current_status in [AnalysisStatus.COMPLETE, AnalysisStatus.FAILED, AnalysisStatus.CANCELLED]:
-        raise HTTPException(
-            status_code=400,
-            detail=f"Cannot cancel analysis with status '{current_status}'"
-        )
-    
-    update_stmt = (
-        update(AnalysisResult)
+    # Get the analysis record
+    get_stmt = (
+        select(AnalysisResult)
         .where(AnalysisResult.id == analysis_id)
-        .values(
-            status=AnalysisStatus.CANCELLED,
-            error_message="Analysis cancelled by user",
-            error_code="USER_CANCELLED"
+        .options(
+            selectinload(AnalysisResult.image), 
+            selectinload(AnalysisResult.ai_model)
         )
     )
-    await db.execute(update_stmt)
+    result = await db.execute(get_stmt)
+    analysis = result.scalar_one_or_none()
+
+    if not analysis:
+        raise HTTPException(status_code=404, detail="Analysis not found")
+    
+    # If analysis is still running, cancel it first
+    if analysis.status in [AnalysisStatus.PENDING, AnalysisStatus.ANALYZING]:
+        analysis.status = AnalysisStatus.CANCELLED
+        analysis.error_message = "Analysis cancelled and deleted by user"
+        analysis.error_code = "USER_DELETED"
+        
+        # Notify via WebSocket about cancellation
+        await manager.send_analysis_update(analysis_id, {
+            "status": AnalysisStatus.CANCELLED.value,
+            "message": "Analysis cancelled and deleted",
+            "error_code": "USER_DELETED"
+        })
+    
+    # Delete the analysis record
+    await db.delete(analysis)
     await db.commit()
     
-    # Notify via WebSocket
-    await manager.send_analysis_update(analysis_id, {
-        "status": AnalysisStatus.CANCELLED.value,
-        "message": "Analysis cancelled",
-        "error_code": "USER_CANCELLED"
+    # Broadcast the deletion to update the main list
+    from app.schemas.analysis import AnalysisResponse
+    analysis_data = AnalysisResponse.model_validate(analysis).model_dump(mode='json')
+    await manager.broadcast({
+        "type": "analysis_deleted",
+        "data": analysis_data
     })
     
-    return {"message": "Analysis cancelled successfully"}
+    return {"message": "Analysis deleted successfully"}

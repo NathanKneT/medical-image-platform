@@ -25,8 +25,8 @@ class AnalysisService:
         db: AsyncSession,
         image_id: str,
         model_id: str,
-        user_id: Optional[str] = None
-        # <<< --- ADD THIS PARAMETER ---
+        user_id: Optional[str] = None,
+        websocket_manager=None  # Add websocket_manager parameter
     ) -> AnalysisResult:
         """
         Start AI analysis for an image.
@@ -39,6 +39,7 @@ class AnalysisService:
             image_id: ID of image to analyze
             model_id: ID of AI model to use
             user_id: ID of requesting user
+            websocket_manager: WebSocket manager for broadcasting updates
             
         Returns:
             AnalysisResult: Created analysis record
@@ -71,10 +72,12 @@ class AnalysisService:
         # Convert the ORM object to a Pydantic model for correct JSON serialization
         analysis_data = AnalysisResponse.model_validate(analysis).model_dump(mode='json')
 
-        await manager.broadcast({
-            "type": "new_analysis_started",
-            "data": analysis_data
-        })
+        # Broadcast the new analysis creation immediately
+        if websocket_manager:
+            await websocket_manager.broadcast({
+                "type": "new_analysis_started",
+                "data": analysis_data
+            })
         
         return analysis
     
@@ -171,6 +174,13 @@ class AnalysisService:
                         "confidence_score": analysis.confidence_score
                     })
                     
+                    # Also broadcast the completion to update the main list
+                    analysis_data = AnalysisResponse.model_validate(analysis).model_dump(mode='json')
+                    await websocket_manager.broadcast({
+                        "type": "analysis_completed",
+                        "data": analysis_data
+                    })
+                    
             except Exception as e:
                 # Handle any unexpected errors during the task
                 print(f"An exception occurred in mock_ai_analysis for ID {analysis_id}: {e}")
@@ -208,6 +218,13 @@ class AnalysisService:
                 "error": error_message,
                 "error_code": error_code
             })
+            
+            # Also broadcast the failure to update the main list
+            analysis_data = AnalysisResponse.model_validate(analysis).model_dump(mode='json')
+            await websocket_manager.broadcast({
+                "type": "analysis_failed",
+                "data": analysis_data
+            })
     
     @staticmethod
     async def _handle_analysis_error(
@@ -229,6 +246,13 @@ class AnalysisService:
                     "status": analysis.status.value,
                     "error": analysis.error_message,
                     "error_code": analysis.error_code
+                })
+                
+                # Also broadcast the error to update the main list
+                analysis_data = AnalysisResponse.model_validate(analysis).model_dump(mode='json')
+                await websocket_manager.broadcast({
+                    "type": "analysis_failed",
+                    "data": analysis_data
                 })
     
     @staticmethod

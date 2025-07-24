@@ -14,31 +14,23 @@ class Settings(BaseSettings):
     
     # Database configuration
     DATABASE_URL: str = "sqlite+aiosqlite:///./medical_platform.db"
-
     REDIS_URL: str = "redis://redis:6379/0"
-    
-    # CORS origins for frontend communication
     CORS_ORIGINS: List[str] = [
-        "http://localhost:3000",  # Local development
-        "http://localhost:3001",  # Alternative local port
-        "https://*.netlify.app",  # Netlify preview deployments
-        "https://your-app.netlify.app"  # Production frontend
+        "http://localhost:3000",
+        "http://localhost:3001",
+        "https://*.netlify.app",
+        "https://your-app.netlify.app"
     ]
-    
-    # File upload settings
-    MAX_FILE_SIZE: int = 50 * 1024 * 1024  # 50MB max file size
+    MAX_FILE_SIZE: int = 50 * 1024 * 1024
     ALLOWED_EXTENSIONS: List[str] = [".jpg", ".jpeg", ".png", ".dcm", ".nii"]
     UPLOAD_DIR: str = "uploads"
-    
-    # WebSocket settings
-    WS_HEARTBEAT_INTERVAL: int = 30  # seconds
-    
-    # Security settings
+    WS_HEARTBEAT_INTERVAL: int = 30
     SECRET_KEY: str = "development-secret-key-change-in-production"
-    
-    # Mock AI processing settings (for demo)
-    MIN_PROCESSING_TIME: int = 10  # seconds
-    MAX_PROCESSING_TIME: int = 45  # seconds
+    MIN_PROCESSING_TIME: int = 10
+    MAX_PROCESSING_TIME: int = 45
+
+    DEMO_ADMIN_EMAIL: str = "not-set"
+    DEMO_ADMIN_PASSWORD: str = "not-set"
     
     @validator("CORS_ORIGINS", pre=True)
     def parse_cors_origins(cls, v):

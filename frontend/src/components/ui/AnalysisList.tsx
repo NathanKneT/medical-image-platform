@@ -45,19 +45,19 @@ export function AnalysisList() {
     },
   });
   
-  // Mutation for cancelling/deleting an analysis
-  const cancelMutation = useMutation({
+  // Mutation for deleting an analysis (works for all statuses)
+  const deleteMutation = useMutation({
     mutationFn: (analysisId: string) => {
-      return api.cancelAnalysisApiV1AnalysisAnalysisIdDelete(analysisId);
+      return api.deleteAnalysisApiV1AnalysisAnalysisIdDelete(analysisId);
     },
     onSuccess: () => {
-      toast.success('Analysis has been cancelled.');
+      toast.success('Analysis has been deleted.');
       // Invalidate the query to refetch the list from the server
       queryClient.invalidateQueries({ queryKey: ['analyses'] });
       handleCloseDialog();
     },
     onError: (error: AxiosError) => {
-      const errorMessage = (error.response?.data as any)?.detail || 'Failed to cancel analysis.';
+      const errorMessage = (error.response?.data as any)?.detail || 'Failed to delete analysis.';
       toast.error(errorMessage);
       handleCloseDialog();
     },
@@ -75,10 +75,9 @@ export function AnalysisList() {
 
   const handleConfirmDelete = () => {
     if (selectedAnalysisId) {
-      cancelMutation.mutate(selectedAnalysisId);
+      deleteMutation.mutate(selectedAnalysisId);
     }
   };
-
 
   if (isLoading) {
     return (
@@ -124,7 +123,6 @@ export function AnalysisList() {
       <div className="space-y-4">
         {analyses.map((analysis: AnalysisResponse) => {
           const StatusIcon = statusIcons[analysis.status as keyof typeof statusIcons];
-          const canBeCancelled = !['COMPLETE', 'FAILED', 'CANCELLED'].includes(analysis.status);
 
           return (
             <Card key={analysis.id} className="hover:shadow-md transition-shadow">
@@ -176,10 +174,9 @@ export function AnalysisList() {
                     <Button
                       variant="ghost"
                       size="sm"
-                      className="text-gray-400 hover:text-red-600 disabled:hover:text-gray-400 disabled:opacity-50"
+                      className="text-gray-400 hover:text-red-600"
                       onClick={() => handleOpenDialog(analysis.id)}
-                      aria-label={`Cancel analysis ${analysis.id}`}
-                      disabled={!canBeCancelled} // <--- FIX: Disable the button based on status
+                      aria-label={`Delete analysis ${analysis.id}`}
                     >
                       <X className="h-4 w-4" />
                     </Button>
@@ -195,12 +192,11 @@ export function AnalysisList() {
         isOpen={isDialogOpen}
         onClose={handleCloseDialog}
         onConfirm={handleConfirmDelete}
-        title="Cancel Analysis"
-        message="Are you sure you want to cancel this analysis? This action cannot be undone."
-        confirmText="Yes, Cancel"
-        isConfirming={cancelMutation.isPending}
+        title="Delete Analysis"
+        message="Are you sure you want to delete this analysis? This action cannot be undone."
+        confirmText="Yes, Delete"
+        isConfirming={deleteMutation.isPending}
       />
     </>
   );
 }
-

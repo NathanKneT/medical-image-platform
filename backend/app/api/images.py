@@ -5,6 +5,7 @@ import aiofiles
 import aiofiles.os 
 from typing import List, Optional
 from fastapi import APIRouter, Depends, HTTPException, UploadFile, File, BackgroundTasks
+from app.security import get_current_admin_user
 from fastapi.responses import FileResponse
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select
@@ -25,6 +26,7 @@ async def upload_image(
     description: Optional[str] = None,
     patient_id: Optional[str] = None,
     user_id: Optional[str] = None,
+    current_user: dict = Depends(get_current_admin_user),
     db: AsyncSession = Depends(get_db)
 ):
     """
@@ -133,6 +135,7 @@ async def upload_image(
 @router.get("/{image_id}", response_model=ImageResponse)
 async def get_image(
     image_id: str,
+    current_user: dict = Depends(get_current_admin_user),
     db: AsyncSession = Depends(get_db)
 ):
     """

@@ -6,6 +6,47 @@
     "version": "1.0.0"
   },
   "paths": {
+    "/api/v1/login/token": {
+      "post": {
+        "tags": [
+          "Authentication"
+        ],
+        "summary": "Login For Access Token",
+        "operationId": "login_for_access_token_api_v1_login_token_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/TokenRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TokenResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/v1/images/upload": {
       "post": {
         "tags": [
@@ -14,6 +55,11 @@
         "summary": "Upload Image",
         "description": "Upload medical image for analysis.\n\nThis endpoint demonstrates several production patterns:\n1. File validation and security checks\n2. Async file I/O with aiofiles\n3. Metadata extraction from medical images\n4. Background task triggering\n5. Proper error handling and rollback\n\nArgs:\n    background_tasks: FastAPI background tasks for async processing\n    file: Uploaded file from multipart form\n    description: Optional description\n    patient_id: Anonymized patient identifier\n    user_id: User uploading the file\n    db: Database session\n    \nReturns:\n    ImageUploadResponse with image metadata and upload status",
         "operationId": "upload_image_api_v1_images_upload_post",
+        "security": [
+          {
+            "OAuth2PasswordBearer": []
+          }
+        ],
         "parameters": [
           {
             "name": "description",
@@ -106,6 +152,11 @@
         "summary": "Get Image",
         "description": "Get image metadata by ID.\n\nArgs:\n    image_id: Unique image identifier\n    db: Database session\n    \nReturns:\n    ImageResponse with complete image metadata",
         "operationId": "get_image_api_v1_images__image_id__get",
+        "security": [
+          {
+            "OAuth2PasswordBearer": []
+          }
+        ],
         "parameters": [
           {
             "name": "image_id",
@@ -403,9 +454,9 @@
         "tags": [
           "Analysis"
         ],
-        "summary": "Cancel Analysis",
-        "description": "Cancel running analysis.\n\nThis endpoint demonstrates how to handle cancellation of\nlong-running background tasks efficiently and without memory overhead.",
-        "operationId": "cancel_analysis_api_v1_analysis__analysis_id__delete",
+        "summary": "Delete Analysis",
+        "description": "Delete analysis record.\n\nThis endpoint allows deletion of any analysis regardless of status.\nFor running analyses, it will cancel them first, then delete.\nFor completed analyses, it will just delete the record.",
+        "operationId": "delete_analysis_api_v1_analysis__analysis_id__delete",
         "parameters": [
           {
             "name": "analysis_id",
@@ -773,7 +824,7 @@
             ],
             "title": "Image Filename"
           },
-          "model_name": {
+          "analysis_model_name": {
             "anyOf": [
               {
                 "type": "string"
@@ -782,9 +833,9 @@
                 "type": "null"
               }
             ],
-            "title": "Model Name"
+            "title": "Analysis Model Name"
           },
-          "model_version": {
+          "analysis_model_version": {
             "anyOf": [
               {
                 "type": "string"
@@ -793,7 +844,7 @@
                 "type": "null"
               }
             ],
-            "title": "Model Version"
+            "title": "Analysis Model Version"
           }
         },
         "type": "object",
@@ -1096,6 +1147,43 @@
         "title": "ImageUploadResponse",
         "description": "Response schema for successful image upload."
       },
+      "TokenRequest": {
+        "properties": {
+          "email": {
+            "type": "string",
+            "format": "email",
+            "title": "Email"
+          },
+          "password": {
+            "type": "string",
+            "title": "Password"
+          }
+        },
+        "type": "object",
+        "required": [
+          "email",
+          "password"
+        ],
+        "title": "TokenRequest"
+      },
+      "TokenResponse": {
+        "properties": {
+          "access_token": {
+            "type": "string",
+            "title": "Access Token"
+          },
+          "token_type": {
+            "type": "string",
+            "title": "Token Type",
+            "default": "bearer"
+          }
+        },
+        "type": "object",
+        "required": [
+          "access_token"
+        ],
+        "title": "TokenResponse"
+      },
       "ValidationError": {
         "properties": {
           "loc": {
@@ -1128,6 +1216,19 @@
           "type"
         ],
         "title": "ValidationError"
+      }
+    },
+    "securitySchemes": {
+      "OAuth2PasswordBearer": {
+        "type": "oauth2",
+        "flows": {
+          "password": {
+            "scopes": {
+
+            },
+            "tokenUrl": "/api/v1/login/token"
+          }
+        }
       }
     }
   }

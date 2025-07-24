@@ -75,3 +75,4 @@ pnpm-debug.log*
 backend/medical_platform.db
 /backend/uploads
 roadmap.md
+.env.local

@@ -64,7 +64,7 @@ export function useImageAnalysis(analysisId?: string): UseImageAnalysisReturn {
         }
 
         if (data.status) {
-          // Invalidate the specific analysis to get the latest data
+          // Invalidate both the specific analysis and the analyses list
           queryClient.invalidateQueries({ queryKey: ['analysis', currentAnalysisId.current] });
           queryClient.invalidateQueries({ queryKey: ['analyses'] });
 
@@ -135,7 +135,7 @@ export function useImageAnalysis(analysisId?: string): UseImageAnalysisReturn {
   const cancelAnalysisMutation = useMutation<unknown, AxiosError, void>({
     mutationFn: async () => {
       if (!currentAnalysisId.current) throw new Error('No analysis to cancel');
-      await api.cancelAnalysisApiV1AnalysisAnalysisIdDelete(currentAnalysisId.current);
+      await api.deleteAnalysisApiV1AnalysisAnalysisIdDelete(currentAnalysisId.current);
     },
     onSuccess: () => {
       if (currentAnalysisId.current) {

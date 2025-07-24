@@ -4,6 +4,23 @@
  */
 
 export interface paths {
+    "/api/v1/login/token": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Login For Access Token */
+        post: operations["login_for_access_token_api_v1_login_token_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/images/upload": {
         parameters: {
             query?: never;
@@ -189,13 +206,14 @@ export interface paths {
         put?: never;
         post?: never;
         /**
-         * Cancel Analysis
-         * @description Cancel running analysis.
+         * Delete Analysis
+         * @description Delete analysis record.
          *
-         *     This endpoint demonstrates how to handle cancellation of
-         *     long-running background tasks efficiently and without memory overhead.
+         *     This endpoint allows deletion of any analysis regardless of status.
+         *     For running analyses, it will cancel them first, then delete.
+         *     For completed analyses, it will just delete the record.
          */
-        delete: operations["cancel_analysis_api_v1_analysis__analysis_id__delete"];
+        delete: operations["delete_analysis_api_v1_analysis__analysis_id__delete"];
         options?: never;
         head?: never;
         patch?: never;
@@ -365,10 +383,10 @@ export interface components {
             updated_at: string;
             /** Image Filename */
             image_filename?: string | null;
-            /** Model Name */
-            model_name?: string | null;
-            /** Model Version */
-            model_version?: string | null;
+            /** Analysis Model Name */
+            analysis_model_name?: string | null;
+            /** Analysis Model Version */
+            analysis_model_version?: string | null;
         };
         /**
          * AnalysisStartResponse
@@ -515,6 +533,26 @@ export interface components {
              */
             message: string;
         };
+        /** TokenRequest */
+        TokenRequest: {
+            /**
+             * Email
+             * Format: email
+             */
+            email: string;
+            /** Password */
+            password: string;
+        };
+        /** TokenResponse */
+        TokenResponse: {
+            /** Access Token */
+            access_token: string;
+            /**
+             * Token Type
+             * @default bearer
+             */
+            token_type: string;
+        };
         /** ValidationError */
         ValidationError: {
             /** Location */
@@ -533,6 +571,39 @@ export interface components {
 }
 export type $defs = Record<string, never>;
 export interface operations {
+    login_for_access_token_api_v1_login_token_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["TokenRequest"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["TokenResponse"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
     upload_image_api_v1_images_upload_post: {
         parameters: {
             query?: {
@@ -761,7 +832,7 @@ export interface operations {
             };
         };
     };
-    cancel_analysis_api_v1_analysis__analysis_id__delete: {
+    delete_analysis_api_v1_analysis__analysis_id__delete: {
         parameters: {
             query?: never;
             header?: never;

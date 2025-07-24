@@ -52,11 +52,12 @@ class AnalysisResponse(BaseModel):
     updated_at: datetime
 
     image_filename: Optional[str] = Field(None, validation_alias="image.filename")
-    model_name: Optional[str] = Field(None, validation_alias="ai_model.name")
-    model_version: Optional[str] = Field(None, validation_alias="ai_model.version")
+    analysis_model_name: Optional[str] = Field(None, validation_alias="ai_model.name")
+    analysis_model_version: Optional[str] = Field(None, validation_alias="ai_model.version")
 
     class Config:
         from_attributes = True # Replaces orm_mode=True in Pydantic v2
+        populate_by_name = True 
 
     @validator("confidence_score")
     def validate_confidence_score(cls, v):

@@ -8,7 +8,7 @@ import uvicorn
 from app.config import settings
 from app.database import init_db  # Direct import is now safe
 from app.middleware.audit_logging import AuditLoggingMiddleware
-from app.api import analysis, images, websocket
+from app.api import analysis, images, websocket, auth
 
 
 @asynccontextmanager
@@ -56,6 +56,7 @@ app.add_middleware(AuditLoggingMiddleware)
 app.mount("/uploads", StaticFiles(directory="uploads"), name="uploads")
 
 # API routes
+app.include_router(auth.router, prefix="/api/v1", tags=["Authentication"])
 app.include_router(images.router, prefix="/api/v1/images", tags=["Images"])
 app.include_router(analysis.router, prefix="/api/v1/analysis", tags=["Analysis"])
 app.include_router(websocket.router, prefix="/ws", tags=["WebSocket"])
