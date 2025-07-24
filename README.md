@@ -6,6 +6,8 @@ platform for medical image analysis with AI Model (mock for the moment), built w
 
 ## Overview
 
+![Demo Screenshot](docs/demo.jpg)
+
 This platform enables medical image uploads, AI-driven analysis, and real-time result visualization. It's designed with clean separation of concerns, async-first principles, and a focus on developer-friendly workflows.
 
 - **Live Frontend**: [https://reliable-moxie-d87614.netlify.app/](https://reliable-moxie-d87614.netlify.app/)  
