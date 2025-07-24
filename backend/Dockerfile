@@ -1,72 +1,34 @@
-# 1. Dockerfile - Multi-stage build for development
+# 1. Base stage with Python and system dependencies
 FROM python:3.11-slim as base
 
-# Set environment variables
 ENV PYTHONDONTWRITEBYTECODE=1 \
     PYTHONUNBUFFERED=1 \
     PYTHONPATH=/app
 
-# Install system dependencies (including libmagic for python-magic)
-RUN apt-get update && apt-get install -y \
+# Install only necessary system dependencies
+RUN apt-get update && apt-get install -y --no-install-recommends \
     libmagic1 \
-    libmagic-dev \
-    gcc \
-    g++ \
     curl \
     && rm -rf /var/lib/apt/lists/*
 
-# Set working directory
 WORKDIR /app
 
-# Development stage
-FROM base as development
-
-# Install Python dependencies
-COPY requirements.txt .
-RUN pip install --no-cache-dir -r requirements.txt
-
-# Install development dependencies
-RUN pip install --no-cache-dir \
-    pytest \
-    pytest-asyncio \
-    httpx \
-    black \
-    isort \
-    flake8 \
-    mypy
-
-# Copy application code (will be overridden by volume mount in docker-compose)
-COPY . .
-
-# Create uploads directory
-RUN mkdir -p uploads
-
-# Expose port
-EXPOSE 8000
-
-# Development command (with hot reload)
-CMD ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8000", "--reload"]
-
-# Production stage
+# 2. Production stage - This will be the final image
 FROM base as production
 
-# Copy requirements and install
+# Copy only the requirements file first to leverage Docker layer caching
 COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
-# Copy application code
-COPY . .
+# Copy the entire application code
+COPY ./app /app/app
 
-# Create uploads directory
-RUN mkdir -p uploads
-
-# Create non-root user for security
-RUN groupadd -r appuser && useradd -r -g appuser appuser
-RUN chown -R appuser:appuser /app
+# Create a non-root user for better security
+RUN useradd --system --create-home appuser
 USER appuser
 
-# Expose port
+# Expose the port the app runs on
 EXPOSE 8000
 
-# Production command
+# The command to run the application in production
 CMD ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8000"]
