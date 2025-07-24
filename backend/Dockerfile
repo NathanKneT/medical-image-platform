@@ -20,11 +20,13 @@ FROM base as production
 COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
-# Copy the entire application code
-COPY ./app /app/app
+COPY app/ /app/app/
+
 
 # Create a non-root user for better security
 RUN useradd --system --create-home appuser
+# Ensure the new user owns the application files
+RUN chown -R appuser:appuser /app
 USER appuser
 
 # Expose the port the app runs on
