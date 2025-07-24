@@ -59,41 +59,28 @@ export function useImageAnalysis(analysisId?: string): UseImageAnalysisReturn {
       console.log('📊 Analysis update received:', data);
 
       try {
-        // Update progress immediately
         if (typeof data.progress === 'number') {
           setProgress(data.progress);
         }
 
-        // Handle errors
-        if (data.error) {
-          setError(data.error);
-          toast.error(data.error);
-        }
-
-        // Handle status changes
         if (data.status) {
-          // Invalidate queries to get fresh data
+          // Invalidate the specific analysis to get the latest data
           queryClient.invalidateQueries({ queryKey: ['analysis', currentAnalysisId.current] });
           queryClient.invalidateQueries({ queryKey: ['analyses'] });
 
           if (data.status === 'COMPLETE') {
             toast.success('Analysis completed successfully!');
             setProgress(100);
-          } else if (data.status === 'FAILED') {
-            toast.error('Analysis failed');
+          } else if (data.status === 'FAILED' || data.status === 'CANCELLED') {
+            toast.error(`Analysis ${data.status.toLowerCase()}`);
             setProgress(0);
-          } else if (data.status === 'ANALYZING') {
-            // Ensure we show progress for analyzing status
-            if (typeof data.progress === 'number') {
-              setProgress(data.progress);
-            }
           }
         }
       } catch (updateError) {
         console.error('Error handling analysis update:', updateError);
       }
     },
-    [queryClient]
+    [queryClient] 
   );
 
   // Start analysis mutation with better state management

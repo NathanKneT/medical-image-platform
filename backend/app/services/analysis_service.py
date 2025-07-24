@@ -3,6 +3,9 @@ import random
 from typing import Dict, Any, Optional
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from app.schemas.analysis import AnalysisResponse
+from app.services.websocket_manager import manager
+
 from app.models.analysis import AnalysisResult, AnalysisStatus
 from app.models.ai_model import AIModel
 from app.models.image import Image
@@ -23,6 +26,7 @@ class AnalysisService:
         image_id: str,
         model_id: str,
         user_id: Optional[str] = None
+        # <<< --- ADD THIS PARAMETER ---
     ) -> AnalysisResult:
         """
         Start AI analysis for an image.
@@ -62,7 +66,15 @@ class AnalysisService:
         
         db.add(analysis)
         await db.commit()
-        await db.refresh(analysis)
+        await db.refresh(analysis, ["image", "ai_model"]) # Eager load for serialization
+        
+        # Convert the ORM object to a Pydantic model for correct JSON serialization
+        analysis_data = AnalysisResponse.model_validate(analysis).model_dump(mode='json')
+
+        await manager.broadcast({
+            "type": "new_analysis_started",
+            "data": analysis_data
+        })
         
         return analysis
     

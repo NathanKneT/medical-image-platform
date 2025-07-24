@@ -321,7 +321,7 @@
           "Analysis"
         ],
         "summary": "Start Analysis",
-        "description": "Start AI analysis for an uploaded image.\n\nThis endpoint demonstrates the async processing pattern:\n1. Immediately create analysis record\n2. Return task ID to client\n3. Process in background\n4. Send updates via WebSocket\n\nArgs:\n    request: Analysis request with image and model IDs\n    background_tasks: FastAPI background tasks\n    db: Database session\n    \nReturns:\n    AnalysisStartResponse with task ID for tracking",
+        "description": "Start AI analysis for an uploaded image.\n...",
         "operationId": "start_analysis_api_v1_analysis_start_post",
         "requestBody": {
           "content": {

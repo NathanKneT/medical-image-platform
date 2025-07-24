@@ -26,22 +26,10 @@ async def start_analysis(
 ):
     """
     Start AI analysis for an uploaded image.
-    
-    This endpoint demonstrates the async processing pattern:
-    1. Immediately create analysis record
-    2. Return task ID to client
-    3. Process in background
-    4. Send updates via WebSocket
-    
-    Args:
-        request: Analysis request with image and model IDs
-        background_tasks: FastAPI background tasks
-        db: Database session
-        
-    Returns:
-        AnalysisStartResponse with task ID for tracking
+    ...
     """
     try:
+        # This call now correctly matches the updated service method
         analysis = await AnalysisService.start_analysis(
             db=db,
             image_id=request.image_id,
@@ -60,12 +48,13 @@ async def start_analysis(
             status=analysis.status,
             message="Analysis started successfully",
             estimated_completion_time=60,
-            websocket_url=f"/ws/analysis/{request.user_id or 'guest'}" # Example URL
+            websocket_url=f"/ws/analysis/{request.user_id or 'guest'}"
         )
         
     except ValueError as e:
         raise HTTPException(status_code=400, detail=str(e))
     except Exception as e:
+        # This will now catch other potential errors more cleanly
         raise HTTPException(status_code=500, detail=f"Failed to start analysis: {str(e)}")
 
 

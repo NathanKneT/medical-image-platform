@@ -2,46 +2,68 @@
 
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
+import { useQueryClient } from '@tanstack/react-query';
 import { ImageUpload } from '@/components/ImageUpload';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import type { ImageUploadResponse } from '@/lib/api-client';
 import { AnalysisList } from '@/components/ui/AnalysisList';
-import { useImageAnalysis } from '@/hooks/useImageAnalysis';
-import { AnalysisProgress } from '@/components/AnalysisProgress';
 import { ModelSelector } from '@/components/ui/ModelSelector';
+import { useImageAnalysis } from '@/hooks/useImageAnalysis';
+import { wsClient } from '@/lib/websocket';
+import type { ImageUploadResponse, AnalysisResponse } from '@/lib/api-client';
+import { AnalysisProgress } from '@/components/AnalysisProgress';
 
 export default function HomePage() {
   const router = useRouter();
+  const queryClient = useQueryClient();
   const [uploadedImage, setUploadedImage] = useState<ImageUploadResponse | null>(null);
   const [selectedModelId, setSelectedModelId] = useState<string | null>(null);
   
   const { analysis, startAnalysis, progress, isLoading, error, clearError } = useImageAnalysis();
 
-  
+  // This effect for navigation is fine
   useEffect(() => {
-    // It triggers ONLY when analysis.id changes to a new value.
     if (analysis?.id) {
       router.push(`/analysis/${analysis.id}`);
     }
   }, [analysis?.id, router]);
 
+  useEffect(() => {
+    const handleNewAnalysis = (message: { type: string; data: AnalysisResponse }) => {
+      console.log('New analysis message received, updating cache directly:', message.data);
+      
+      // Use setQueryData to optimistically update the list
+      queryClient.setQueryData(['analyses'], (oldData: AnalysisResponse[] | undefined) => {
+        const newAnalysis = message.data;
+        // If the cache is empty, start a new list
+        if (!oldData) {
+          return [newAnalysis];
+        }
+        // Prepend the new analysis to the existing list
+        return [newAnalysis, ...oldData];
+      });
+    };
+
+    if (!wsClient.isConnected) {
+        wsClient.connect();
+    }
+    // Subscribe using the new logic from the previous fix
+    wsClient.subscribeToAnalysis('new_analysis_started', handleNewAnalysis);
+
+    return () => {
+      wsClient.unsubscribeFromAnalysis('new_analysis_started');
+    };
+  }, [queryClient]);
+
   const handleUploadSuccess = (image: ImageUploadResponse) => {
     setUploadedImage(image);
     setSelectedModelId(null);
-    if (analysis) {
-      clearError();
-    }
+    clearError();
   };
 
   const handleStartAnalysis = async () => {
     if (uploadedImage && selectedModelId) {
-      try {
-        await startAnalysis(uploadedImage.id, selectedModelId);
-        // The useEffect above will handle navigation
-      } catch (error) {
-        console.error('Failed to start analysis:', error);
-      }
+      await startAnalysis(uploadedImage.id, selectedModelId);
     }
   };
 
@@ -189,10 +211,7 @@ export default function HomePage() {
           <Button 
             variant="ghost" 
             size="sm"
-            onClick={() => {
-              // Refresh the analyses list
-              window.location.reload();
-            }}
+            onClick={() => queryClient.invalidateQueries({ queryKey: ['analyses'] })}
           >
             Refresh
           </Button>
