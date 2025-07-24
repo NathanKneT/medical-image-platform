@@ -7,7 +7,7 @@ sqlalchemy==2.0.23
 aiosqlite==0.19.0
 alembic==1.12.1
 asyncpg==0.29.0  # For PostgreSQL
-psycopg2==2.9.10
+psycopg2-binary==2.9.10  # Changed from psycopg2 to psycopg2-binary
 
 # Cache 
 redis==5.0.1
@@ -33,12 +33,10 @@ pytest==7.4.3
 pytest-asyncio==0.21.1
 httpx==0.25.2
 
-# CORS middleware
-python-cors==1.7.0
-
-typing-extensions==4.8.0
-python-dotenv==1.0.0
-
 # Security
 python-jose[cryptography]==3.3.0
 passlib[bcrypt]==1.7.4
+
+# Additional dependencies
+typing-extensions==4.8.0
+python-dotenv==1.0.0
