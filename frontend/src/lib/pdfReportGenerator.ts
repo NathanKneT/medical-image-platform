@@ -208,7 +208,7 @@ export async function generateMedicalReport(data: ReportData): Promise<void> {
   addText(`Modality: ${imageData?.modality || 'MRI'}`, margin + 90, yPosition, { fontSize: 10 });
   yPosition += 6;
 
-  addText(`AI Model: ${analysis.model_name || 'ResNet-50 Medical'} v${analysis.model_version || '2.1'}`, margin, yPosition, { fontSize: 10 });
+  addText(`AI Model: ${analysis.analysis_model_name || 'ResNet-50 Medical'} v${analysis.analysis_model_version || '2.1'}`, margin, yPosition, { fontSize: 10 });
   addText(`Processing Time: ${analysis.processing_time_seconds ? Math.round(analysis.processing_time_seconds) + 's' : 'N/A'}`, margin + 90, yPosition, { fontSize: 10 });
   yPosition += 6;
 
@@ -379,7 +379,7 @@ export async function generateMedicalReport(data: ReportData): Promise<void> {
 
   const technicalNotes = [
     'This analysis was performed using AI-powered medical image analysis software.',
-    `Analysis completed using ${analysis.model_name || 'AI model'} trained on over 10,000 similar cases.`,
+    `Analysis completed using ${analysis.analysis_model_name || 'AI model'} trained on over 10,000 similar cases.`,
     'Results should be interpreted in clinical context by a qualified radiologist.',
     'This report is computer-generated and should be reviewed by a medical professional.',
     'AI analysis is intended to assist, not replace, clinical judgment.'
