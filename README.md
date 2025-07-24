@@ -137,11 +137,9 @@ graph TD
 - Node.js 20+
 - Python 3.11+
 - Docker (optional, for containerized setup)
-- Docker (optional, for containerized setup)
 
 ### Local Development
 
-1. **Backend**:
 1. **Backend**:
 ```bash
 cd backend
@@ -152,7 +150,6 @@ uvicorn app.main:app --reload
 ```
 
 2. **Frontend**:
-2. **Frontend**:
 ```bash
 cd frontend
 npm install
@@ -161,7 +158,6 @@ npm run generate-api  # Regenerate API client if backend changes
 npm run dev
 ```
 
-3. **Docker** (Alternative):
 3. **Docker** (Alternative):
 ```bash
 docker-compose up --build
@@ -301,17 +297,6 @@ Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope CurrentUser  # One-time
 ---
 
 ## Mock ML Pipeline
-
-The current AI analysis is mocked to simulate:
-- Processing delays (30-60s)
-- Status transitions (PENDING → ANALYZING → COMPLETE)
-- Confidence scores and structured outputs
-- Error simulation for robustness
-
-**To Productionize**:
-1. Replace `mock_ai_analysis` in `analysis_service.py` with real model inference.
-2. Integrate a task queue (e.g., Celery) and model registry.
-3. Optimize for GPU/CPU resource management.
 
 The current AI analysis is mocked to simulate:
 - Processing delays (30-60s)
