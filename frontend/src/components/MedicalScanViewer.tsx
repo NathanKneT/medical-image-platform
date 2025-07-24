@@ -13,7 +13,6 @@ import {
   Pause,
   SkipBack,
   SkipForward,
-  Volume2,
   Download,
   Maximize,
   Eye,

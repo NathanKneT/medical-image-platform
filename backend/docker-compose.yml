@@ -2,15 +2,13 @@ services:
   app:
     build:
       context: .
-      target: development
+      target: production
     container_name: medical-platform-api
     ports:
       - "8000:8000"
     volumes:
-      # Mount source code for hot reload
       - ./app:/app/app
       - ./uploads:/app/uploads
-      # Mount requirements for easy dependency changes
       - ./requirements.txt:/app/requirements.txt
     environment:
       - DATABASE_URL=sqlite+aiosqlite:///./medical_platform.db
@@ -26,31 +24,3 @@ services:
       timeout: 10s
       retries: 3
       start_period: 60s
-
-  # Optional: PostgreSQL 
-  db:
-    image: postgres:15-alpine
-    container_name: medical-platform-db
-    environment:
-      POSTGRES_DB: medical_platform
-      POSTGRES_USER: medical_user
-      POSTGRES_PASSWORD: medical_pass
-    ports:
-      - "5432:5432"
-    volumes:
-      - postgres_data:/var/lib/postgresql/data
-    restart: unless-stopped
-
-  # Redis for caching and sessions
-  redis:
-    image: redis:7-alpine
-    container_name: medical-platform-redis
-    ports:
-      - "6379:6379"
-    volumes:
-      - redis_data:/data
-    restart: unless-stopped
-
-volumes:
-  postgres_data:
-  redis_data:

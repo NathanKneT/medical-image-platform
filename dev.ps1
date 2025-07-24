@@ -3,15 +3,17 @@ param(
     [string]$Command = "help"
 )
 
+$ComposeFile = "-f ./backend/docker-compose.dev.yml"
+
 function Show-Help {
     Write-Host "Available commands:" -ForegroundColor Green
-    Write-Host "  build          Build the Docker images" -ForegroundColor Cyan
+    Write-Host "  build          Build the Docker images for dev" -ForegroundColor Cyan
     Write-Host "  up             Start the development environment" -ForegroundColor Cyan
     Write-Host "  down           Stop the development environment" -ForegroundColor Cyan
     Write-Host "  logs           View logs" -ForegroundColor Cyan
     Write-Host "  shell          Access the app container shell" -ForegroundColor Cyan
-    Write-Host "  test           Run tests" -ForegroundColor Cyan
-    Write-Host "  clean          Clean up Docker resources" -ForegroundColor Cyan
+    Write-Host "  clean          Clean up Docker resources for dev" -ForegroundColor Cyan
+    Write-Host "  start          Build and start everything for dev" -ForegroundColor Cyan
     Write-Host ""
     Write-Host "Usage: .\dev.ps1 <command>" -ForegroundColor Yellow
     Write-Host "Example: .\dev.ps1 start" -ForegroundColor Yellow
@@ -19,7 +21,7 @@ function Show-Help {
 
 function Test-Docker {
     try {
-        $result = docker version 2>$null
+        docker version 2>$null
         return $LASTEXITCODE -eq 0
     }
     catch {
@@ -33,40 +35,41 @@ if (-not (Test-Docker)) {
     exit 1
 }
 
+# All commands are now correctly scoped to the development compose file.
 switch ($Command) {
     "help" { Show-Help }
-    "build" { 
+    "build" {
         Write-Host "Building Docker images..." -ForegroundColor Green
-        docker compose build 
+        Invoke-Expression "docker compose $ComposeFile build"
     }
-    "up" { 
+    "up" {
         Write-Host "Starting development environment..." -ForegroundColor Green
-        docker compose up -d 
+        Invoke-Expression "docker compose $ComposeFile up -d"
     }
-    "down" { 
+    "down" {
         Write-Host "Stopping development environment..." -ForegroundColor Green
-        docker compose down 
+        Invoke-Expression "docker compose $ComposeFile down"
     }
-    "logs" { 
+    "logs" {
         Write-Host "Viewing logs..." -ForegroundColor Green
-        docker compose logs -f app 
+        Invoke-Expression "docker compose $ComposeFile logs -f app"
     }
-    "shell" { 
+    "shell" {
         Write-Host "Accessing container shell..." -ForegroundColor Green
-        docker compose exec app bash 
+        Invoke-Expression "docker compose $ComposeFile exec app bash"
     }
-    "test" { 
+    "test" {
         Write-Host "Running tests..." -ForegroundColor Green
-        docker compose exec app pytest 
+        Invoke-Expression "docker compose $ComposeFile exec app pytest"
     }
-    "clean" { 
+    "clean" {
         Write-Host "Cleaning up Docker resources..." -ForegroundColor Green
-        docker compose down -v
+        Invoke-Expression "docker compose $ComposeFile down -v"
         docker system prune -f
     }
     "start" {
         Write-Host "Building and starting development environment..." -ForegroundColor Green
-        docker compose up -d --build
+        Invoke-Expression "docker compose $ComposeFile up -d --build"
         if ($LASTEXITCODE -eq 0) {
             Write-Host "Development environment started successfully!" -ForegroundColor Green
             Write-Host "API: http://localhost:8000" -ForegroundColor Yellow
@@ -75,8 +78,8 @@ switch ($Command) {
             Write-Host "Failed to start development environment" -ForegroundColor Red
         }
     }
-    default { 
+    default {
         Write-Host "Unknown command: $Command" -ForegroundColor Red
-        Show-Help 
+        Show-Help
     }
 }

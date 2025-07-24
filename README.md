@@ -1,30 +1,47 @@
 # Blueprint: Medical Image Analysis Platform
 
-Welcome to the Medical Image Analysis Platform! A comprehensive blueprint for building AI Medical web app. Designed to embody the architectural patterns and best practices required for sensitive domains like healthcare.
-
-## Core Architecture & Philosophy
-
-This project is built on a foundation of clean separation of concerns and robust, asynchronous communication.
-
--   **Backend First, Async Native:** A high-performance **FastAPI** backend handles all heavy lifting, from secure file uploads to AI model processing. Its asynchronous nature is key to our non-blocking design.
--   **Interactive & Reactive Frontend:** A **Next.js (React)** frontend provides a seamless user experience. We leverage **TypeScript** for strict type-safety and **TanStack Query** for intelligent state management.
--   **Real-Time is a Requirement:** We don't rely on simple polling. A persistent **WebSocket** connection provides instant feedback from the server to the client, creating a truly reactive experience.
--   **Database Done Right:** Using **SQLAlchemy 2.0** in its `async` mode, the database schema is designed for scalability and compliance, supporting features like AI model versioning and audit trails.
--   **Ready for Production:** The entire application is containerized with **Docker**, with deployment configurations for modern cloud platforms like Railway and Netlify ready to go (i'm broke so I use free tiers for the demo but we can move it too a true deployment solution like AWS / Azure or custom VPS pipeline :D)
+platform for medical image analysis with AI Model (mock for the moment), built with modern architectural patterns to ensure scalability, performance, and real-time interactivity. This project showcases a production-ready blueprint for healthcare applications, balancing developer ergonomics with enterprise-grade requirements.
 
 ---
 
+## Overview
 
-#### **Architecture Patterns**
-*   **Service & Repository Layers**: We strictly separate business logic (`services`) from data access (`models`), making the code cleaner, easier to test, and more maintainable.
-*   **Observer Pattern**: Our WebSocket implementation is a classic example. The frontend "observes" the backend, which pushes state changes (`PENDING`, `COMPLETE`) as they happen.
-*   **Middleware Pattern**: Used for cross-cutting concerns like security. Our audit logging middleware intercepts every request, ensuring compliance without cluttering our business logic.
+![Demo Screenshot](docs/demo.jpg)
 
-#### **Performance & Scalability**
-*   **Non-Blocking I/O**: From the `async` database drivers to `aiofiles` for file storage, no operation blocks the server's event loop.
-*   **Horizontal Scaling**: The FastAPI backend is stateless, meaning you can spin up multiple instances behind a load balancer to handle increased traffic.
-*   **Frontend Performance**: Next.js provides automatic code-splitting, while React Query prevents unnecessary data re-fetching, keeping the UI fast and responsive.
-*   **3D Visualization Strategy**: The `MedicalScanViewer` component is designed with performance in mind, acknowledging the need for WebGL, Level of Detail (LOD), and Web Workers to handle large medical scans without crashing the browser.
+This platform enables medical image uploads, AI-driven analysis, and real-time result visualization. It's designed with clean separation of concerns, async-first principles, and a focus on developer-friendly workflows.
+
+- **Live Frontend**: [https://reliable-moxie-d87614.netlify.app/](https://reliable-moxie-d87614.netlify.app/)  
+- **Backend API Docs**: [https://medical-image-platform-production.up.railway.app/redoc](https://medical-image-platform-production.up.railway.app/redoc)
+
+---
+
+## Architecture
+
+### Backend
+Powered by **FastAPI**, the backend is async-native, handling everything from secure file uploads to AI inference. It uses **SQLAlchemy 2.0** (async mode) for scalable, audit-compliant data storage and **WebSockets** for real-time updates.
+
+### Frontend
+Built with **Next.js** and **TypeScript**, the frontend delivers a reactive, type-safe UI. **TanStack Query** optimizes data fetching, while **Tailwind CSS** ensures a responsive design. A WebGL-based `MedicalScanViewer` component is ready for rendering large medical scans efficiently.
+
+### Infrastructure
+The entire stack is containerized with **Docker** and configured for deployment on platforms like **Railway** (backend) and **Netlify** (frontend). It’s battle-tested on free tiers but ready for cloud platforms like AWS or Azure.
+
+---
+
+## Key Patterns
+
+- **Service/Repository**: Business logic lives in service layers, with repositories abstracting data access for cleaner, testable code.
+- **Observer (WebSocket)**: Real-time updates push analysis status (e.g., PENDING → COMPLETE) to the frontend.
+- **Middleware**: Security and audit logging are handled via FastAPI middleware, keeping business logic uncluttered.
+
+---
+
+## Performance & Scalability
+
+- **Async I/O**: From database queries to file handling (via `aiofiles`), the backend avoids blocking the event loop.
+- **Stateless API**: FastAPI’s stateless design enables horizontal scaling behind a load balancer.
+- **Frontend Optimizations**: Next.js code-splitting and React Query’s caching keep the UI snappy.
+- **3D Visualization**: The `MedicalScanViewer` uses WebGL and plans for Level of Detail (LOD) and Web Workers to handle large datasets without browser crashes.
 
 ---
 
@@ -33,11 +50,11 @@ This project is built on a foundation of clean separation of concerns and robust
 ### Prerequisites
 - Node.js 20+
 - Python 3.11+
-- Docker
+- Docker (optional, for containerized setup)
 
 ### Local Development
 
-1. **Backend Setup:**
+1. **Backend**:
 ```bash
 cd backend
 python -m venv venv
@@ -46,93 +63,95 @@ pip install -r requirements.txt
 uvicorn app.main:app --reload
 ```
 
-2. **Frontend Setup:**
+2. **Frontend**:
 ```bash
 cd frontend
 npm install
-npm run generate-api # If you change the backend API, regenerate the client to keep it in sync
+npm run generate-api  # Regenerate API client if backend changes
 npm run dev
 ```
 
-3. **Docker Setup (Alternative):**
+3. **Docker** (Alternative):
 ```bash
 docker-compose up --build
 ```
 
-# Development workflow commands on Windows
-- Use the provided `dev.ps1` PowerShell script to manage your development workflow.
+4. **Windows Workflow**:
+Use the `dev.ps1` PowerShell script for streamlined development:
+```powershell
+Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope CurrentUser  # One-time setup
+.\dev.ps1 start  # Build and run
+.\dev.ps1 logs   # View logs
+.\dev.ps1 down   # Tear down
+```
 
-# Set execution policy (one time)
-Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope CurrentUser
+---
 
-# Use the script
-.\dev.ps1 help
-.\dev.ps1 start    # Build and start everything
-.\dev.ps1 logs
-.\dev.ps1 shell
-.\dev.ps1 down
+## Deployment
 
-### Deployment
+### Backend (Railway)
+1. Connect your GitHub repo to Railway.
+2. Set environment variables:
+   - `DATABASE_URL`: Provided by Railway’s PostgreSQL.
+   - `CORS_ORIGINS`: Your Netlify frontend URL.
+3. Push to deploy.
 
-#### Backend Deployment (Railway - Free Tier)
-1. Connect your GitHub repo to Railway
-2. Add environment variables:
-   - `DATABASE_URL` (Railway will provide PostgreSQL)
-   - `CORS_ORIGINS` (your Netlify domain)
-3. Railway auto-deploys on push
+### Frontend (Netlify)
+1. Connect your GitHub repo to Netlify.
+2. Configure:
+   - Build command: `npm run build`
+   - Publish directory: `.next`
+   - Environment variables:
+     - `NEXT_PUBLIC_API_URL`: Railway backend URL.
+     - `NEXT_PUBLIC_WS_URL`: WebSocket endpoint.
 
-#### Frontend Deployment (Netlify)
-1. Connect GitHub repo to Netlify
-2. Build command: `npm run build`
-3. Publish directory: `.next`
-4. Add environment variables:
-   - `NEXT_PUBLIC_API_URL` (your Railway backend URL)
-   - `NEXT_PUBLIC_WS_URL` (WebSocket endpoint)
+---
 
-## Technical Interview Talking Points
+## Technical Roadmap
 
-### Architecture Patterns Demonstrated:
-- **Repository Pattern**: Clean data layer separation
-- **Service Layer**: Business logic encapsulation  
-- **Observer Pattern**: WebSocket event handling
-- **Factory Pattern**: Database session management
-- **Middleware Pattern**: Cross-cutting concerns (logging, CORS)
+1. **WebSocket Scaling**:
+   - Current: Single-instance WebSocket connections stored in memory.
+   - Planned: Use Redis Pub/Sub for a distributed message bus, enabling multi-instance real-time communication.
 
-### Performance Optimizations:
-- **Database**: Async SQLAlchemy with connection pooling
-- **Frontend**: React Query caching, code splitting
-- **Real-time**: WebSocket connection management
-- **3D Rendering**: GPU acceleration, LOD strategies
+2. **File Storage**:
+   - Current: Local file storage for uploads.
+   - Planned: Migrate to Amazon S3 or Google Cloud Storage with pre-signed URLs for secure, scalable file handling.
 
-### Scalability Considerations:
-- **Horizontal Scaling**: Stateless API design
-- **Caching**: Redis-ready architecture
-- **File Storage**: S3-compatible interface
-- **Database**: Migration-based schema evolution
-- **Monitoring**: Structured logging for observability
+3. **ML Pipeline**:
+   - Current: Mock AI analysis with realistic delays and status updates.
+   - Planned: Integrate a real ML pipeline with Celery task queues, model registries (e.g., MLflow), and GPU support.
 
-## Mock ML Pipeline
+4. **Authentication**:
+   - Current: Hardcoded demo user.
+   - Planned: Full auth system with user registration, RBAC, and multi-tenancy for medical data isolation.
 
-The AI analysis is currently mocked with:
-- Realistic processing time (30-60 seconds)
-- Status progression (PENDING → ANALYZING → COMPLETE)
-- Confidence scores and structured results
-- Error simulation for robustness testing
+5. **Repository Pattern**:
+   - Planned: Abstract SQLAlchemy queries into repository classes for better testability and database-agnostic logic.
 
-To integrate real ML:
-1. Replace `mock_ai_analysis()` in `analysis_service.py`
-2. Add model loading and inference code
-3. Update result schemas for actual model outputs
-4. Add GPU/CPU resource management
+---
 
 ## Demo Features
 
-- ✅ File upload with progress tracking
-- ✅ Real-time processing status via WebSocket
-- ✅ 3D visualization placeholder
-- ✅ Responsive design with Tailwind CSS
-- ✅ Type-safe API communication
-- ✅ Error handling and user feedback
-- ✅ Audit logging for security compliance
-- ✅ Docker containerization
-- ✅ Production deployment configs
+- ✅ Secure file uploads with progress tracking
+- ✅ Real-time analysis updates via WebSocket
+- ✅ Placeholder 3D scan visualization (WebGL-based)
+- ✅ Type-safe API communication (TypeScript)
+- ✅ Responsive UI with Tailwind CSS
+- ✅ Comprehensive error handling
+- ✅ Audit logging for compliance
+- ✅ Dockerized for easy deployment
+
+---
+
+## Mock ML Pipeline
+
+The current AI analysis is mocked to simulate:
+- Processing delays (30-60s)
+- Status transitions (PENDING → ANALYZING → COMPLETE)
+- Confidence scores and structured outputs
+- Error simulation for robustness
+
+**To Productionize**:
+1. Replace `mock_ai_analysis` in `analysis_service.py` with real model inference.
+2. Integrate a task queue (e.g., Celery) and model registry.
+3. Optimize for GPU/CPU resource management.
